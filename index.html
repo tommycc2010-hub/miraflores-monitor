@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guardianes de Miraflores</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #f0f4f0; color: #222; }
+    header { background: #0f6e56; color: white; padding: 20px; text-align: center; }
+    header h1 { font-size: 22px; }
+    header p { font-size: 13px; opacity: 0.8; margin-top: 4px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; padding: 24px; }
+    .card { background: white; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .label { font-size: 13px; color: #666; margin-bottom: 8px; }
+    .valor { font-size: 36px; font-weight: bold; color: #0f6e56; }
+    .unidad { font-size: 14px; color: #999; margin-top: 4px; }
+    .estado { font-size: 13px; margin-top: 8px; padding: 4px 12px; border-radius: 20px; display: inline-block; }
+    .ok { background: #e2f5ee; color: #0f6e56; }
+    .warn { background: #fef3e2; color: #854f0b; }
+    .danger { background: #fde8e8; color: #a32d2d; }
+    .alto { background: #e2ecfa; color: #0c447c; }
+    .bajo { background: #f1efe8; color: #5f5e5a; }
+    footer { text-align: center; padding: 16px; font-size: 12px; color: #999; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Guardianes de Miraflores</h1>
+  <p>Monitoreo de quebradas — La Estrella, Antioquia</p>
+</header>
+<div class="grid">
+  <div class="card">
+    <div class="label">TDS — Sólidos disueltos</div>
+    <div class="valor" id="tds-val">--</div>
+    <div class="unidad">ppm</div>
+    <div class="estado" id="tds-estado">--</div>
+  </div>
+  <div class="card">
+    <div class="label">Turbidez</div>
+    <div class="valor" id="turb-val">--</div>
+    <div class="unidad">NTU</div>
+    <div class="estado" id="turb-estado">--</div>
+  </div>
+  <div class="card">
+    <div class="label">pH del agua</div>
+    <div class="valor" id="ph-val">--</div>
+    <div class="unidad"> </div>
+    <div class="estado" id="ph-estado">--</div>
+  </div>
+  <div class="card">
+    <div class="label">Nivel del agua</div>
+    <div class="valor" id="nivel-val">--</div>
+    <div class="unidad"> </div>
+    <div class="estado" id="nivel-estado">--</div>
+  </div>
+</div>
+<footer>Actualización automática cada 5 segundos</footer>
+<script>
+  const API = window.location.origin + "/datos";
+
+  function clasificarTDS(ppm) {
+    if (ppm < 300) return ["Excelente", "ok"];
+    if (ppm < 600) return ["Buena", "ok"];
+    if (ppm < 900) return ["Regular", "warn"];
+    return ["Contaminada", "danger"];
+  }
+
+  function clasificarTurbidez(ntu) {
+    if (ntu < 5)   return ["Clara", "ok"];
+    if (ntu < 50)  return ["Lev. turbia", "warn"];
+    if (ntu < 200) return ["Turbia", "warn"];
+    return ["Muy turbia", "danger"];
+  }
+
+  function clasificarPH(ph) {
+    if (ph < 6.5)  return ["Ácido", "danger"];
+    if (ph <= 8.5) return ["Neutro", "ok"];
+    return ["Básico", "warn"];
+  }
+
+  async function actualizarDatos() {
+    try {
+      const res = await fetch(API);
+      const d = await res.json();
+
+      const [tdsLabel, tdsCls] = clasificarTDS(d.tds);
+      const [turbLabel, turbCls] = clasificarTurbidez(d.turbidez);
+      const [phLabel, phCls] = clasificarPH(d.ph);
+
+      document.getElementById("tds-val").textContent = d.tds.toFixed(1);
+      document.getElementById("tds-estado").textContent = tdsLabel;
+      document.getElementById("tds-estado").className = `estado ${tdsCls}`;
+
+      document.getElementById("turb-val").textContent = d.turbidez.toFixed(1);
+      document.getElementById("turb-estado").textContent = turbLabel;
+      document.getElementById("turb-estado").className = `estado ${turbCls}`;
+
+      document.getElementById("ph-val").textContent = d.ph.toFixed(2);
+      document.getElementById("ph-estado").textContent = phLabel;
+      document.getElementById("ph-estado").className = `estado ${phCls}`;
+
+      document.getElementById("nivel-val").textContent = d.nivel;
+      document.getElementById("nivel-estado").className = `estado ${d.nivel === "ALTO" ? "alto" : "bajo"}`;
+    } catch (e) {
+      console.log("Error:", e);
+    }
+  }
+
+  actualizarDatos();
+  setInterval(actualizarDatos, 5000);
+</script>
+</body>
+</html>
