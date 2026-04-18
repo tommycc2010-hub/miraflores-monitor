@@ -8,8 +8,9 @@
   <style>
     :root {
       --verde: #0f6e56;
+      --verde2: #1a9070;
       --verde-claro: #e2f5ee;
-      --gris: #f5f7f5;
+      --gris: #f4f6f4;
       --borde: #e0e7e0;
       --texto: #1a2e1a;
       --muted: #6b7c6b;
@@ -18,297 +19,268 @@
     body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--gris); color: var(--texto); }
 
     header {
-      background: var(--verde);
+      background: linear-gradient(135deg, #0a5240, #1a9070);
       color: white;
-      padding: 18px 32px;
+      padding: 16px 32px;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
-    header h1 { font-size: 20px; font-weight: 600; }
-    header p { font-size: 12px; opacity: 0.75; margin-top: 3px; }
-    .header-right { text-align: right; font-size: 12px; opacity: 0.85; }
-    #reloj { font-size: 22px; font-weight: 600; }
+    .header-left h1 { font-size: 20px; font-weight: 700; }
+    .header-left p  { font-size: 12px; opacity: 0.75; margin-top: 2px; }
+    .header-right   { text-align: right; }
+    #reloj { font-size: 24px; font-weight: 700; }
+    #fecha { font-size: 11px; opacity: 0.8; margin-top: 2px; }
+    .conexion { font-size: 11px; margin-top: 4px; }
 
-    .contenedor { max-width: 1200px; margin: 0 auto; padding: 24px 20px; }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 20px; }
 
-    .metricas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
-    .metrica {
+    .metricas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+    .met {
       background: white;
       border-radius: 12px;
-      padding: 18px;
+      padding: 16px 18px;
       border: 1px solid var(--borde);
+      border-left: 4px solid var(--verde);
       position: relative;
-      overflow: hidden;
     }
-    .metrica::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0;
-      width: 4px; height: 100%;
-      background: var(--verde);
+    .met.warn   { border-left-color: #e9a700; }
+    .met.danger { border-left-color: #d63030; }
+    .met-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+    .met-val   { font-size: 30px; font-weight: 700; color: var(--verde); line-height: 1; }
+    .met.warn   .met-val { color: #e9a700; }
+    .met.danger .met-val { color: #d63030; }
+    .met-unit  { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .met-badge {
+      display: inline-block; margin-top: 8px;
+      padding: 2px 10px; border-radius: 20px;
+      font-size: 11px; font-weight: 500;
+      background: var(--verde-claro); color: var(--verde);
     }
-    .metrica.warn::before { background: #e9a700; }
-    .metrica.danger::before { background: #d63030; }
-    .metrica-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-    .metrica-valor { font-size: 32px; font-weight: 700; color: var(--verde); line-height: 1; }
-    .metrica.warn .metrica-valor { color: #e9a700; }
-    .metrica.danger .metrica-valor { color: #d63030; }
-    .metrica-unidad { font-size: 13px; color: var(--muted); margin-top: 3px; }
-    .metrica-badge {
-      display: inline-block;
-      margin-top: 8px;
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 500;
-      background: var(--verde-claro);
-      color: var(--verde);
-    }
-    .metrica.warn .metrica-badge { background: #fff3cd; color: #856404; }
-    .metrica.danger .metrica-badge { background: #fde8e8; color: #a32d2d; }
+    .met.warn   .met-badge { background: #fff3cd; color: #856404; }
+    .met.danger .met-badge { background: #fde8e8; color: #a32d2d; }
 
-    .fila-dos { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; margin-bottom: 24px; }
+    .row2 { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .row3 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
 
-    .card {
-      background: white;
-      border-radius: 12px;
-      border: 1px solid var(--borde);
-      overflow: hidden;
-    }
-    .card-header {
-      padding: 14px 18px;
+    .card { background: white; border-radius: 12px; border: 1px solid var(--borde); overflow: hidden; }
+    .card-head {
+      padding: 12px 18px;
       border-bottom: 1px solid var(--borde);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      display: flex; align-items: center; justify-content: space-between;
     }
-    .card-header h2 { font-size: 14px; font-weight: 600; color: var(--texto); }
-    .card-header span { font-size: 11px; color: var(--muted); }
+    .card-head h2 { font-size: 14px; font-weight: 600; }
+    .card-head span { font-size: 11px; color: var(--muted); }
     .card-body { padding: 16px 18px; }
 
-    .grafica-tabs { display: flex; gap: 6px; }
-    .gtab {
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 11px;
-      cursor: pointer;
-      border: 1px solid var(--borde);
-      background: white;
-      color: var(--muted);
+    .tabs { display: flex; gap: 6px; }
+    .tab {
+      padding: 4px 12px; border-radius: 20px; font-size: 11px;
+      cursor: pointer; border: 1px solid var(--borde);
+      background: white; color: var(--muted);
     }
-    .gtab.active { background: var(--verde); color: white; border-color: var(--verde); }
+    .tab.on { background: var(--verde); color: white; border-color: var(--verde); }
 
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .stat { background: var(--gris); border-radius: 8px; padding: 10px 12px; }
+    .stat-l { font-size: 11px; color: var(--muted); margin-bottom: 3px; }
+    .stat-v { font-size: 20px; font-weight: 700; color: var(--verde); }
+    .stat-u { font-size: 11px; color: var(--muted); }
+
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
     thead th {
-      padding: 8px 12px;
-      text-align: left;
-      font-size: 11px;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
+      padding: 8px 12px; text-align: left;
+      font-size: 11px; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.4px;
       border-bottom: 1px solid var(--borde);
+      background: var(--gris);
     }
-    tbody tr { border-bottom: 1px solid var(--borde); }
+    tbody tr { border-bottom: 1px solid var(--borde); transition: background .15s; }
+    tbody tr:hover { background: var(--gris); }
     tbody tr:last-child { border-bottom: none; }
-    tbody td { padding: 9px 12px; color: var(--texto); }
+    tbody td { padding: 8px 12px; }
     .badge {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 10px;
-      font-size: 11px;
-      font-weight: 500;
+      display: inline-block; padding: 2px 8px;
+      border-radius: 10px; font-size: 11px; font-weight: 500;
     }
-    .b-ok { background: var(--verde-claro); color: var(--verde); }
-    .b-warn { background: #fff3cd; color: #856404; }
+    .b-ok     { background: var(--verde-claro); color: var(--verde); }
+    .b-warn   { background: #fff3cd; color: #856404; }
     .b-danger { background: #fde8e8; color: #a32d2d; }
 
-    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .stat-item { background: var(--gris); border-radius: 8px; padding: 10px 12px; }
-    .stat-label { font-size: 11px; color: var(--muted); margin-bottom: 3px; }
-    .stat-val { font-size: 18px; font-weight: 600; color: var(--verde); }
-    .stat-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
-
-    .fila-tres { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
-
     footer {
-      text-align: center;
-      padding: 16px;
-      font-size: 12px;
-      color: var(--muted);
+      text-align: center; padding: 14px;
+      font-size: 12px; color: var(--muted);
       border-top: 1px solid var(--borde);
-      background: white;
+      background: white; margin-top: 8px;
     }
 
     @media (max-width: 768px) {
-      .metricas { grid-template-columns: repeat(2, 1fr); }
-      .fila-dos, .fila-tres { grid-template-columns: 1fr; }
+      .metricas { grid-template-columns: repeat(2,1fr); }
+      .row2, .row3 { grid-template-columns: 1fr; }
+      header { flex-direction: column; gap: 10px; text-align: center; }
+      .header-right { text-align: center; }
     }
   </style>
 </head>
 <body>
 
 <header>
-  <div>
+  <div class="header-left">
     <h1>🌿 Guardianes de Miraflores</h1>
-    <p>Monitoreo de quebradas en tiempo real — La Estrella, Antioquia</p>
+    <p>Monitoreo de quebradas — La Estrella, Antioquia</p>
   </div>
   <div class="header-right">
     <div id="reloj">--:--:--</div>
     <div id="fecha">--</div>
-    <div style="margin-top:4px">● <span id="estado-conexion">Conectando...</span></div>
+    <div class="conexion">● <span id="estado" style="color:#a8f0d0">Conectando...</span></div>
   </div>
 </header>
 
-<div class="contenedor">
+<div class="wrap">
 
-  <!-- Tarjetas métricas -->
   <div class="metricas">
-    <div class="metrica" id="card-tds">
-      <div class="metrica-label">TDS — Sólidos disueltos</div>
-      <div class="metrica-valor" id="tds-val">--</div>
-      <div class="metrica-unidad">ppm</div>
-      <div class="metrica-badge" id="tds-badge">--</div>
+    <div class="met" id="c-tds">
+      <div class="met-label">TDS — Sólidos disueltos</div>
+      <div class="met-val" id="v-tds">--</div>
+      <div class="met-unit">ppm</div>
+      <div class="met-badge" id="b-tds">--</div>
     </div>
-    <div class="metrica" id="card-turb">
-      <div class="metrica-label">Turbidez</div>
-      <div class="metrica-valor" id="turb-val">--</div>
-      <div class="metrica-unidad">NTU</div>
-      <div class="metrica-badge" id="turb-badge">--</div>
+    <div class="met" id="c-turb">
+      <div class="met-label">Turbidez</div>
+      <div class="met-val" id="v-turb">--</div>
+      <div class="met-unit">NTU</div>
+      <div class="met-badge" id="b-turb">--</div>
     </div>
-    <div class="metrica" id="card-ph">
-      <div class="metrica-label">pH del agua</div>
-      <div class="metrica-valor" id="ph-val">--</div>
-      <div class="metrica-unidad">potencial de hidrógeno</div>
-      <div class="metrica-badge" id="ph-badge">--</div>
+    <div class="met" id="c-ph">
+      <div class="met-label">pH del agua</div>
+      <div class="met-val" id="v-ph">--</div>
+      <div class="met-unit">potencial de hidrógeno</div>
+      <div class="met-badge" id="b-ph">--</div>
     </div>
-    <div class="metrica" id="card-nivel">
-      <div class="metrica-label">Nivel del agua</div>
-      <div class="metrica-valor" id="nivel-val">--</div>
-      <div class="metrica-unidad">sensor flotador</div>
-      <div class="metrica-badge" id="nivel-badge">--</div>
+    <div class="met" id="c-nivel">
+      <div class="met-label">Nivel del agua</div>
+      <div class="met-val" id="v-nivel">--</div>
+      <div class="met-unit">sensor flotador</div>
+      <div class="met-badge" id="b-nivel">--</div>
     </div>
   </div>
 
-  <!-- Gráfica + estadísticas -->
-  <div class="fila-dos">
+  <div class="row2">
     <div class="card">
-      <div class="card-header">
+      <div class="card-head">
         <h2>Historial de lecturas</h2>
-        <div class="grafica-tabs">
-          <div class="gtab active" onclick="cambiarGrafica('tds', this)">TDS</div>
-          <div class="gtab" onclick="cambiarGrafica('turbidez', this)">Turbidez</div>
-          <div class="gtab" onclick="cambiarGrafica('ph', this)">pH</div>
+        <div class="tabs">
+          <div class="tab on" onclick="cambiar('tds',this)">TDS</div>
+          <div class="tab" onclick="cambiar('turbidez',this)">Turbidez</div>
+          <div class="tab" onclick="cambiar('ph',this)">pH</div>
         </div>
       </div>
       <div class="card-body">
-        <canvas id="grafica" height="180"></canvas>
+        <canvas id="grafica" height="160"></canvas>
       </div>
     </div>
     <div class="card">
-      <div class="card-header">
+      <div class="card-head">
         <h2>Estadísticas</h2>
-        <span id="stats-sensor">TDS</span>
+        <span id="stat-sensor">TDS (ppm)</span>
       </div>
       <div class="card-body">
-        <div class="stats-grid">
-          <div class="stat-item">
-            <div class="stat-label">Promedio</div>
-            <div class="stat-val" id="stat-avg">--</div>
-            <div class="stat-sub" id="stat-avg-u">ppm</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-label">Máximo</div>
-            <div class="stat-val" id="stat-max">--</div>
-            <div class="stat-sub" id="stat-max-u">ppm</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-label">Mínimo</div>
-            <div class="stat-val" id="stat-min">--</div>
-            <div class="stat-sub" id="stat-min-u">ppm</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-label">Lecturas</div>
-            <div class="stat-val" id="stat-count">0</div>
-            <div class="stat-sub">total registradas</div>
-          </div>
+        <div class="stats">
+          <div class="stat"><div class="stat-l">Promedio</div><div class="stat-v" id="s-avg">--</div><div class="stat-u" id="s-avg-u">ppm</div></div>
+          <div class="stat"><div class="stat-l">Máximo</div><div class="stat-v" id="s-max">--</div><div class="stat-u" id="s-max-u">ppm</div></div>
+          <div class="stat"><div class="stat-l">Mínimo</div><div class="stat-v" id="s-min">--</div><div class="stat-u" id="s-min-u">ppm</div></div>
+          <div class="stat"><div class="stat-l">Lecturas hoy</div><div class="stat-v" id="s-count">0</div><div class="stat-u">registros</div></div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Tabla de historial -->
-  <div class="card" style="margin-bottom:24px">
-    <div class="card-header">
-      <h2>Registro de lecturas</h2>
-      <span id="total-registros">0 registros</span>
+  <div class="row3">
+    <div class="card">
+      <div class="card-head">
+        <h2>Resumen diario</h2>
+        <span>Últimos 7 días</span>
+      </div>
+      <div class="card-body" style="padding:0;overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>TDS avg</th>
+              <th>Turbidez avg</th>
+              <th>pH avg</th>
+              <th>Registros</th>
+              <th>Calidad</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-diario">
+            <tr><td colspan="6" style="text-align:center;padding:16px;color:#999">Sin datos aún</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-    <div class="card-body" style="padding:0;overflow-x:auto">
-      <table>
-        <thead>
-          <tr>
-            <th>Hora</th>
-            <th>TDS (ppm)</th>
-            <th>Turbidez (NTU)</th>
-            <th>pH</th>
-            <th>Nivel</th>
-            <th>Estado general</th>
-          </tr>
-        </thead>
-        <tbody id="tabla-body">
-          <tr><td colspan="6" style="text-align:center;padding:20px;color:#999">Esperando datos...</td></tr>
-        </tbody>
-      </table>
+    <div class="card">
+      <div class="card-head">
+        <h2>Últimas lecturas</h2>
+        <span id="total-lect">0 registros</span>
+      </div>
+      <div class="card-body" style="padding:0;overflow-x:auto;max-height:280px;overflow-y:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>Hora</th>
+              <th>TDS</th>
+              <th>Turb.</th>
+              <th>pH</th>
+              <th>Nivel</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-lect">
+            <tr><td colspan="5" style="text-align:center;padding:16px;color:#999">Esperando datos...</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 
 </div>
 
 <footer>
-  Guardianes de Miraflores · La Estrella, Antioquia · Actualización cada 5 segundos
+  Guardianes de Miraflores · La Estrella, Antioquia · Datos guardados en Google Sheets · Actualización cada 10 segundos
 </footer>
 
 <script>
-  const API = window.location.origin + "/datos";
+  const API = "https://script.google.com/macros/s/AKfycbzHsR06A0MX8nAcUUsgotqURFW5EKqhaSKeUC_ORgMZWyWgkzzutno_Du0XMPbMn-_08g/exec";
 
-  const historial = { tds: [], turbidez: [], ph: [], labels: [] };
-  const MAX_PUNTOS = 20;
-  const MAX_FILAS  = 50;
-  let grafica_actual = 'tds';
+  let sensor_actual = 'tds';
   let chart;
-  let filas = [];
+  let histTDS=[], histTurb=[], histPH=[], histLabels=[];
 
   // Reloj
-  function actualizarReloj() {
-    const ahora = new Date();
-    document.getElementById('reloj').textContent = ahora.toLocaleTimeString('es-CO');
-    document.getElementById('fecha').textContent = ahora.toLocaleDateString('es-CO', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-  }
-  setInterval(actualizarReloj, 1000);
-  actualizarReloj();
+  setInterval(() => {
+    const n = new Date();
+    document.getElementById('reloj').textContent = n.toLocaleTimeString('es-CO');
+    document.getElementById('fecha').textContent  = n.toLocaleDateString('es-CO',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  }, 1000);
 
   // Clasificaciones
-  function clsTDS(v)  { return v < 300 ? ['Excelente','ok'] : v < 600 ? ['Buena','ok'] : v < 900 ? ['Regular','warn'] : ['Contaminada','danger']; }
-  function clsTurb(v) { return v < 5 ? ['Clara','ok'] : v < 50 ? ['Lev. turbia','warn'] : v < 200 ? ['Turbia','warn'] : ['Muy turbia','danger']; }
-  function clsPH(v)   { return v < 6.5 ? ['Ácido','danger'] : v <= 8.5 ? ['Neutro','ok'] : ['Básico','warn']; }
-  function clsNivel(v){ return v === 'ALTO' ? ['Alto','ok'] : ['Bajo','warn']; }
+  const clsTDS  = v => v<300?['Excelente','ok']:v<600?['Buena','ok']:v<900?['Regular','warn']:['Contaminada','danger'];
+  const clsTurb = v => v<5?['Clara','ok']:v<50?['Lev. turbia','warn']:v<200?['Turbia','warn']:['Muy turbia','danger'];
+  const clsPH   = v => v<6.5?['Ácido','danger']:v<=8.5?['Neutro','ok']:['Básico','warn'];
+  const clsNiv  = v => v==='ALTO'?['Alto','ok']:['Bajo','warn'];
+  const clsCal  = v => v==='Buena'?'b-ok':v==='Regular'?'b-warn':'b-danger';
 
-  function estadoGeneral(tds, turb, ph) {
-    const niveles = [clsTDS(tds)[1], clsTurb(turb)[1], clsPH(ph)[1]];
-    if (niveles.includes('danger')) return ['Alerta','b-danger'];
-    if (niveles.includes('warn'))   return ['Precaución','b-warn'];
-    return ['Normal','b-ok'];
-  }
-
-  function aplicarClase(cardId, cls) {
-    const card = document.getElementById(cardId);
-    card.classList.remove('warn','danger');
-    if (cls === 'warn') card.classList.add('warn');
-    if (cls === 'danger') card.classList.add('danger');
+  function setMet(id, val, unit, label, cls) {
+    document.getElementById('v-'+id).textContent = val;
+    document.getElementById('b-'+id).textContent = label;
+    const c = document.getElementById('c-'+id);
+    c.classList.remove('warn','danger');
+    if (cls==='warn') c.classList.add('warn');
+    if (cls==='danger') c.classList.add('danger');
   }
 
   // Gráfica
-  function iniciarGrafica() {
+  function initChart() {
     const ctx = document.getElementById('grafica').getContext('2d');
     chart = new Chart(ctx, {
       type: 'line',
@@ -317,135 +289,122 @@
         datasets: [{
           data: [],
           borderColor: '#0f6e56',
-          backgroundColor: 'rgba(15,110,86,0.08)',
+          backgroundColor: 'rgba(15,110,86,0.07)',
           borderWidth: 2,
           tension: 0.4,
-          pointRadius: 3,
-          fill: true,
+          pointRadius: 2,
+          fill: true
         }]
       },
       options: {
         plugins: { legend: { display: false } },
         scales: {
-          x: { grid: { color: '#f0f0f0' }, ticks: { font: { size: 10 }, color: '#888' } },
+          x: { grid: { color: '#f0f0f0' }, ticks: { font: { size: 10 }, color: '#888', maxTicksLimit: 8 } },
           y: { grid: { color: '#f0f0f0' }, ticks: { font: { size: 10 }, color: '#888' } }
         },
-        animation: { duration: 400 }
+        animation: { duration: 300 }
       }
     });
   }
 
-  function actualizarGrafica() {
-    const datos = historial[grafica_actual];
-    chart.data.labels = historial.labels;
+  function cambiar(sensor, btn) {
+    sensor_actual = sensor;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+    btn.classList.add('on');
+    const unidades = { tds:'ppm', turbidez:'NTU', ph:'' };
+    document.getElementById('stat-sensor').textContent = sensor.toUpperCase() + ' (' + unidades[sensor] + ')';
+    actualizarChart();
+  }
+
+  function actualizarChart() {
+    const map = { tds: histTDS, turbidez: histTurb, ph: histPH };
+    const datos = map[sensor_actual];
+    chart.data.labels = histLabels;
     chart.data.datasets[0].data = datos;
     chart.update();
-    actualizarStats(grafica_actual);
-  }
 
-  function cambiarGrafica(sensor, btn) {
-    grafica_actual = sensor;
-    document.querySelectorAll('.gtab').forEach(t => t.classList.remove('active'));
-    btn.classList.add('active');
-    const unidades = { tds: 'ppm', turbidez: 'NTU', ph: '' };
-    document.getElementById('stats-sensor').textContent = sensor.toUpperCase();
-    actualizarGrafica();
-  }
-
-  function actualizarStats(sensor) {
-    const datos = historial[sensor];
-    if (datos.length === 0) return;
-    const unidades = { tds: 'ppm', turbidez: 'NTU', ph: '' };
-    const u = unidades[sensor];
-    const avg = (datos.reduce((a,b) => a+b, 0) / datos.length).toFixed(1);
-    const max = Math.max(...datos).toFixed(1);
-    const min = Math.min(...datos).toFixed(1);
-    document.getElementById('stat-avg').textContent = avg;
-    document.getElementById('stat-max').textContent = max;
-    document.getElementById('stat-min').textContent = min;
-    document.getElementById('stat-count').textContent = filas.length;
-    document.getElementById('stat-avg-u').textContent = u;
-    document.getElementById('stat-max-u').textContent = u;
-    document.getElementById('stat-min-u').textContent = u;
-  }
-
-  // Tabla
-  function agregarFila(d, hora) {
-    const [estLabel, estCls] = estadoGeneral(d.tds, d.turbidez, d.ph);
-    const [nivLabel] = clsNivel(d.nivel);
-    filas.unshift({ hora, ...d, estLabel, estCls });
-    if (filas.length > MAX_FILAS) filas.pop();
-
-    const tbody = document.getElementById('tabla-body');
-    tbody.innerHTML = filas.map(f => `
-      <tr>
-        <td>${f.hora}</td>
-        <td>${f.tds}</td>
-        <td>${f.turbidez}</td>
-        <td>${f.ph}</td>
-        <td>${f.nivel}</td>
-        <td><span class="badge ${f.estCls}">${f.estLabel}</span></td>
-      </tr>
-    `).join('');
-    document.getElementById('total-registros').textContent = `${filas.length} registros`;
-  }
-
-  // Actualizar datos
-  async function actualizar() {
-    try {
-      const res = await fetch(API);
-      const d = await res.json();
-      const ahora = new Date().toLocaleTimeString('es-CO');
-
-      // Métricas
-      const [tdsL, tdsCls]   = clsTDS(d.tds);
-      const [turbL, turbCls] = clsTurb(d.turbidez);
-      const [phL, phCls]     = clsPH(d.ph);
-      const [nivL, nivCls]   = clsNivel(d.nivel);
-
-      document.getElementById('tds-val').textContent   = d.tds.toFixed(1);
-      document.getElementById('turb-val').textContent  = d.turbidez.toFixed(1);
-      document.getElementById('ph-val').textContent    = d.ph.toFixed(2);
-      document.getElementById('nivel-val').textContent = d.nivel;
-
-      document.getElementById('tds-badge').textContent   = tdsL;
-      document.getElementById('turb-badge').textContent  = turbL;
-      document.getElementById('ph-badge').textContent    = phL;
-      document.getElementById('nivel-badge').textContent = nivL;
-
-      aplicarClase('card-tds',   tdsCls);
-      aplicarClase('card-turb',  turbCls);
-      aplicarClase('card-ph',    phCls);
-      aplicarClase('card-nivel', nivCls);
-
-      // Historial
-      historial.labels.push(ahora);
-      historial.tds.push(d.tds);
-      historial.turbidez.push(d.turbidez);
-      historial.ph.push(d.ph);
-
-      if (historial.labels.length > MAX_PUNTOS) {
-        historial.labels.shift();
-        historial.tds.shift();
-        historial.turbidez.shift();
-        historial.ph.shift();
-      }
-
-      actualizarGrafica();
-      agregarFila(d, ahora);
-
-      document.getElementById('estado-conexion').textContent = 'En línea';
-      document.getElementById('estado-conexion').style.color = '#a8f0d0';
-
-    } catch(e) {
-      document.getElementById('estado-conexion').textContent = 'Sin conexión';
-      document.getElementById('estado-conexion').style.color = '#ffaaaa';
+    if (datos.length > 0) {
+      const avg = (datos.reduce((a,b)=>a+b,0)/datos.length).toFixed(1);
+      const max = Math.max(...datos).toFixed(1);
+      const min = Math.min(...datos).toFixed(1);
+      const unidades = { tds:'ppm', turbidez:'NTU', ph:'' };
+      const u = unidades[sensor_actual];
+      document.getElementById('s-avg').textContent = avg;
+      document.getElementById('s-max').textContent = max;
+      document.getElementById('s-min').textContent = min;
+      document.getElementById('s-avg-u').textContent = u;
+      document.getElementById('s-max-u').textContent = u;
+      document.getElementById('s-min-u').textContent = u;
     }
   }
 
-  iniciarGrafica();
+  async function actualizar() {
+    try {
+      const res = await fetch(API);
+      const d   = await res.json();
+
+      // Métricas actuales
+      const act = d.actual;
+      if (act && act.tds !== undefined) {
+        const [tL,tC]  = clsTDS(act.tds);
+        const [tbL,tbC]= clsTurb(act.turbidez);
+        const [pL,pC]  = clsPH(act.ph);
+        const [nL,nC]  = clsNiv(act.nivel);
+        setMet('tds',   act.tds.toFixed(1),   'ppm', tL,  tC);
+        setMet('turb',  act.turbidez.toFixed(1),'NTU', tbL, tbC);
+        setMet('ph',    act.ph.toFixed(2),     '',    pL,  pC);
+        setMet('nivel', act.nivel,             '',    nL,  nC);
+      }
+
+      // Historial para gráfica
+      if (d.lecturas && d.lecturas.length > 0) {
+        histLabels = d.lecturas.map(l => l.hora);
+        histTDS    = d.lecturas.map(l => l.tds);
+        histTurb   = d.lecturas.map(l => l.turbidez);
+        histPH     = d.lecturas.map(l => l.ph);
+        actualizarChart();
+
+        // Tabla lecturas
+        document.getElementById('s-count').textContent = d.lecturas.length;
+        document.getElementById('total-lect').textContent = d.lecturas.length + ' registros';
+        const filas = [...d.lecturas].reverse().slice(0,30);
+        document.getElementById('tabla-lect').innerHTML = filas.map(f => `
+          <tr>
+            <td>${f.hora}</td>
+            <td>${parseFloat(f.tds).toFixed(1)}</td>
+            <td>${parseFloat(f.turbidez).toFixed(1)}</td>
+            <td>${parseFloat(f.ph).toFixed(2)}</td>
+            <td>${f.nivel}</td>
+          </tr>
+        `).join('');
+      }
+
+      // Resumen diario
+      if (d.promedios && d.promedios.length > 0) {
+        document.getElementById('tabla-diario').innerHTML = [...d.promedios].reverse().map(p => `
+          <tr>
+            <td>${p.fecha}</td>
+            <td>${parseFloat(p.tds).toFixed(1)}</td>
+            <td>${parseFloat(p.turbidez).toFixed(1)}</td>
+            <td>${parseFloat(p.ph).toFixed(2)}</td>
+            <td>${p.registros}</td>
+            <td><span class="badge ${clsCal(p.calidad)}">${p.calidad}</span></td>
+          </tr>
+        `).join('');
+      }
+
+      document.getElementById('estado').textContent = 'En línea';
+      document.getElementById('estado').style.color = '#a8f0d0';
+
+    } catch(e) {
+      document.getElementById('estado').textContent = 'Sin conexión';
+      document.getElementById('estado').style.color = '#ffaaaa';
+    }
+  }
+
+  initChart();
   actualizar();
-  setInterval(actualizar, 5000);
+  setInterval(actualizar, 10000);
 </script>
 </body>
 </html>
