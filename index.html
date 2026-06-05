@@ -29,7 +29,7 @@
     #fecha { font-size: 11px; opacity: 0.8; margin-top: 2px; }
     .conexion { font-size: 11px; margin-top: 4px; }
     .wrap { max-width: 1200px; margin: 0 auto; padding: 20px; }
-    .metricas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+    .metricas  { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
     .metricas2 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
     .met {
       background: white; border-radius: 12px;
@@ -51,6 +51,34 @@
     }
     .met.warn   .met-badge { background: #fff3cd; color: #856404; }
     .met.danger .met-badge { background: #fde8e8; color: #a32d2d; }
+
+    /* ── Alertas ── */
+    #alertas { margin-bottom: 20px; }
+    .alerta {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 14px 18px; border-radius: 12px; margin-bottom: 10px;
+      animation: aparecer 0.4s ease;
+    }
+    @keyframes aparecer { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+    .alerta-danger {
+      background: #fff0f0;
+      border: 1.5px solid #d63030;
+      color: #7a1010;
+    }
+    .alerta-warn {
+      background: #fffbec;
+      border: 1.5px solid #e9a700;
+      color: #6b4200;
+    }
+    .alerta-ok {
+      background: var(--verde-claro);
+      border: 1.5px solid #0f6e56;
+      color: #0a3d2e;
+    }
+    .alerta-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+    .alerta-titulo { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+    .alerta-desc   { font-size: 12px; line-height: 1.5; }
+
     .row2 { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; margin-bottom: 20px; }
     .row3 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
     .card { background: white; border-radius: 12px; border: 1px solid var(--borde); overflow: hidden; }
@@ -116,7 +144,6 @@
 
 <div class="wrap">
 
-  <!-- Fila 1 — sensores principales -->
   <div class="metricas">
     <div class="met" id="c-tds">
       <div class="met-label">TDS — Sólidos disueltos</div>
@@ -144,7 +171,6 @@
     </div>
   </div>
 
-  <!-- Fila 2 — variables ambientales -->
   <div class="metricas2">
     <div class="met" id="c-temp">
       <div class="met-label">Temperatura</div>
@@ -172,7 +198,9 @@
     </div>
   </div>
 
-  <!-- Gráfica + estadísticas -->
+  <!-- Panel de alertas -->
+  <div id="alertas"></div>
+
   <div class="row2">
     <div class="card">
       <div class="card-head">
@@ -206,7 +234,6 @@
     </div>
   </div>
 
-  <!-- Tablas -->
   <div class="row3">
     <div class="card">
       <div class="card-head">
@@ -217,12 +244,8 @@
         <table>
           <thead>
             <tr>
-              <th>Fecha</th>
-              <th>TDS</th>
-              <th>Turb.</th>
-              <th>pH</th>
-              <th>Registros</th>
-              <th>Calidad</th>
+              <th>Fecha</th><th>TDS</th><th>Turb.</th>
+              <th>pH</th><th>Registros</th><th>Calidad</th>
             </tr>
           </thead>
           <tbody id="tabla-diario">
@@ -240,14 +263,8 @@
         <table>
           <thead>
             <tr>
-              <th>Hora</th>
-              <th>TDS</th>
-              <th>Turb.</th>
-              <th>pH</th>
-              <th>Temp</th>
-              <th>EC</th>
-              <th>OD</th>
-              <th>Nivel</th>
+              <th>Hora</th><th>TDS</th><th>Turb.</th>
+              <th>pH</th><th>Temp</th><th>EC</th><th>OD</th><th>Nivel</th>
             </tr>
           </thead>
           <tbody id="tabla-lect">
@@ -296,6 +313,58 @@
     if (cls==='danger') c.classList.add('danger');
   }
 
+  function generarAlertas(d) {
+    const alertas = [];
+
+    if (d.tds > 900)
+      alertas.push({ tipo:'danger', icono:'🚨', titulo:'PELIGRO — TDS muy alto', desc:`TDS: ${d.tds} ppm. El agua presenta alta concentración de sólidos disueltos. Posible contaminación química o industrial.` });
+    else if (d.tds > 600)
+      alertas.push({ tipo:'warn', icono:'⚠️', titulo:'Precaución — TDS elevado', desc:`TDS: ${d.tds} ppm. Nivel regular. Se recomienda monitoreo continuo.` });
+
+    if (d.turbidez > 200)
+      alertas.push({ tipo:'danger', icono:'🚨', titulo:'PELIGRO — Turbidez crítica', desc:`Turbidez: ${d.turbidez} NTU. Agua muy turbia. Posible vertimiento, erosión severa o evento de contaminación.` });
+    else if (d.turbidez > 50)
+      alertas.push({ tipo:'warn', icono:'⚠️', titulo:'Precaución — Turbidez elevada', desc:`Turbidez: ${d.turbidez} NTU. Agua moderadamente turbia. Puede deberse a lluvias o sedimentos.` });
+
+    if (d.ph < 6.5)
+      alertas.push({ tipo:'danger', icono:'🚨', titulo:'PELIGRO — pH ácido', desc:`pH: ${d.ph}. El agua está acidificada. Puede ser letal para organismos acuáticos. Posible lluvia ácida o vertimientos.` });
+    else if (d.ph > 8.5)
+      alertas.push({ tipo:'warn', icono:'⚠️', titulo:'Precaución — pH básico', desc:`pH: ${d.ph}. El agua está alcalina. Fuera del rango óptimo para la vida acuática.` });
+
+    if (d.oxigeno < 5)
+      alertas.push({ tipo:'danger', icono:'🚨', titulo:'PELIGRO — Oxígeno disuelto crítico', desc:`OD: ${d.oxigeno} mg/L. Nivel insuficiente para sostener vida acuática. Riesgo de mortandad de peces.` });
+    else if (d.oxigeno < 7)
+      alertas.push({ tipo:'warn', icono:'⚠️', titulo:'Precaución — Oxígeno disuelto bajo', desc:`OD: ${d.oxigeno} mg/L. Nivel por debajo del óptimo. Monitorear de cerca.` });
+
+    if (d.conductividad > 1500)
+      alertas.push({ tipo:'danger', icono:'🚨', titulo:'PELIGRO — Conductividad muy alta', desc:`EC: ${d.conductividad} µS/cm. Alta presencia de iones en el agua. Posible contaminación industrial o agrícola.` });
+
+    if (d.temperatura > 30)
+      alertas.push({ tipo:'warn', icono:'⚠️', titulo:'Precaución — Temperatura alta', desc:`Temperatura: ${d.temperatura}°C. Temperaturas elevadas reducen el oxígeno disuelto y afectan el ecosistema.` });
+
+    const contenedor = document.getElementById('alertas');
+    if (alertas.length === 0) {
+      contenedor.innerHTML = `
+        <div class="alerta alerta-ok">
+          <div class="alerta-icon">✅</div>
+          <div>
+            <div class="alerta-titulo">Todos los parámetros normales</div>
+            <div class="alerta-desc">La calidad del agua se encuentra dentro de los rangos saludables para el ecosistema acuático.</div>
+          </div>
+        </div>`;
+    } else {
+      contenedor.innerHTML = alertas.map(a => `
+        <div class="alerta alerta-${a.tipo}">
+          <div class="alerta-icon">${a.icono}</div>
+          <div>
+            <div class="alerta-titulo">${a.titulo}</div>
+            <div class="alerta-desc">${a.desc}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+  }
+
   function initChart() {
     const ctx = document.getElementById('grafica').getContext('2d');
     chart = new Chart(ctx, {
@@ -339,13 +408,12 @@
       const max = Math.max(...datos).toFixed(1);
       const min = Math.min(...datos).toFixed(1);
       const unidades = { tds:'ppm', turbidez:'NTU', ph:'', temperatura:'°C', conductividad:'µS/cm', oxigeno:'mg/L' };
-      const u = unidades[sensor_actual] || '';
       document.getElementById('s-avg').textContent = avg;
       document.getElementById('s-max').textContent = max;
       document.getElementById('s-min').textContent = min;
-      document.getElementById('s-avg-u').textContent = u;
-      document.getElementById('s-max-u').textContent = u;
-      document.getElementById('s-min-u').textContent = u;
+      document.getElementById('s-avg-u').textContent = unidades[sensor_actual]||'';
+      document.getElementById('s-max-u').textContent = unidades[sensor_actual]||'';
+      document.getElementById('s-min-u').textContent = unidades[sensor_actual]||'';
     }
   }
 
@@ -365,27 +433,29 @@
         const [eL,eC]   = clsEC(act.conductividad||0);
         const [oL,oC]   = clsOD(act.oxigeno||0);
 
-        setMet('tds',   (act.tds||0).toFixed(1),           tL,  tC);
-        setMet('turb',  (act.turbidez||0).toFixed(1),      tbL, tbC);
-        setMet('ph',    (act.ph||0).toFixed(2),            pL,  pC);
-        setMet('nivel', act.nivel||'--',                   nL,  nC);
-        setMet('temp',  (act.temperatura||0)+'',           teL, teC);
-        setMet('hum',   (act.humedad||0)+'',               hL,  hC);
-        setMet('ec',    (act.conductividad||0).toFixed(1), eL,  eC);
-        setMet('od',    (act.oxigeno||0).toFixed(2),       oL,  oC);
+        setMet('tds',   (act.tds||0).toFixed(1),            tL,  tC);
+        setMet('turb',  (act.turbidez||0).toFixed(1),       tbL, tbC);
+        setMet('ph',    (act.ph||0).toFixed(2),             pL,  pC);
+        setMet('nivel', act.nivel||'--',                    nL,  nC);
+        setMet('temp',  (act.temperatura||0)+'',            teL, teC);
+        setMet('hum',   (act.humedad||0)+'',                hL,  hC);
+        setMet('ec',    (act.conductividad||0).toFixed(1),  eL,  eC);
+        setMet('od',    (act.oxigeno||0).toFixed(2),        oL,  oC);
+
+        generarAlertas(act);
       }
 
       if (d.lecturas && d.lecturas.length > 0) {
-        hist.labels       = d.lecturas.map(l => l.hora);
-        hist.tds          = d.lecturas.map(l => parseFloat(l.tds)||0);
-        hist.turbidez     = d.lecturas.map(l => parseFloat(l.turbidez)||0);
-        hist.ph           = d.lecturas.map(l => parseFloat(l.ph)||0);
-        hist.temperatura  = d.lecturas.map(l => parseFloat(l.temperatura)||0);
-        hist.conductividad= d.lecturas.map(l => parseFloat(l.conductividad)||0);
-        hist.oxigeno      = d.lecturas.map(l => parseFloat(l.oxigeno)||0);
+        hist.labels        = d.lecturas.map(l => l.hora);
+        hist.tds           = d.lecturas.map(l => parseFloat(l.tds)||0);
+        hist.turbidez      = d.lecturas.map(l => parseFloat(l.turbidez)||0);
+        hist.ph            = d.lecturas.map(l => parseFloat(l.ph)||0);
+        hist.temperatura   = d.lecturas.map(l => parseFloat(l.temperatura)||0);
+        hist.conductividad = d.lecturas.map(l => parseFloat(l.conductividad)||0);
+        hist.oxigeno       = d.lecturas.map(l => parseFloat(l.oxigeno)||0);
         actualizarChart();
 
-        document.getElementById('s-count').textContent = d.lecturas.length;
+        document.getElementById('s-count').textContent    = d.lecturas.length;
         document.getElementById('total-lect').textContent = d.lecturas.length + ' registros';
 
         const filas = [...d.lecturas].reverse().slice(0,30);
