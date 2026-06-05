@@ -17,14 +17,10 @@
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--gris); color: var(--texto); }
-
     header {
       background: linear-gradient(135deg, #0a5240, #1a9070);
-      color: white;
-      padding: 16px 32px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      color: white; padding: 16px 32px;
+      display: flex; align-items: center; justify-content: space-between;
     }
     .header-left h1 { font-size: 20px; font-weight: 700; }
     .header-left p  { font-size: 12px; opacity: 0.75; margin-top: 2px; }
@@ -32,22 +28,18 @@
     #reloj { font-size: 24px; font-weight: 700; }
     #fecha { font-size: 11px; opacity: 0.8; margin-top: 2px; }
     .conexion { font-size: 11px; margin-top: 4px; }
-
     .wrap { max-width: 1200px; margin: 0 auto; padding: 20px; }
-
     .metricas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+    .metricas2 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
     .met {
-      background: white;
-      border-radius: 12px;
-      padding: 16px 18px;
-      border: 1px solid var(--borde);
+      background: white; border-radius: 12px;
+      padding: 16px 18px; border: 1px solid var(--borde);
       border-left: 4px solid var(--verde);
-      position: relative;
     }
     .met.warn   { border-left-color: #e9a700; }
     .met.danger { border-left-color: #d63030; }
     .met-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-    .met-val   { font-size: 30px; font-weight: 700; color: var(--verde); line-height: 1; }
+    .met-val   { font-size: 28px; font-weight: 700; color: var(--verde); line-height: 1; }
     .met.warn   .met-val { color: #e9a700; }
     .met.danger .met-val { color: #d63030; }
     .met-unit  { font-size: 12px; color: var(--muted); margin-top: 2px; }
@@ -59,71 +51,57 @@
     }
     .met.warn   .met-badge { background: #fff3cd; color: #856404; }
     .met.danger .met-badge { background: #fde8e8; color: #a32d2d; }
-
     .row2 { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; margin-bottom: 20px; }
     .row3 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-
     .card { background: white; border-radius: 12px; border: 1px solid var(--borde); overflow: hidden; }
     .card-head {
-      padding: 12px 18px;
-      border-bottom: 1px solid var(--borde);
+      padding: 12px 18px; border-bottom: 1px solid var(--borde);
       display: flex; align-items: center; justify-content: space-between;
     }
     .card-head h2 { font-size: 14px; font-weight: 600; }
     .card-head span { font-size: 11px; color: var(--muted); }
     .card-body { padding: 16px 18px; }
-
-    .tabs { display: flex; gap: 6px; }
+    .tabs { display: flex; gap: 6px; flex-wrap: wrap; }
     .tab {
       padding: 4px 12px; border-radius: 20px; font-size: 11px;
       cursor: pointer; border: 1px solid var(--borde);
       background: white; color: var(--muted);
     }
     .tab.on { background: var(--verde); color: white; border-color: var(--verde); }
-
     .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .stat { background: var(--gris); border-radius: 8px; padding: 10px 12px; }
     .stat-l { font-size: 11px; color: var(--muted); margin-bottom: 3px; }
     .stat-v { font-size: 20px; font-weight: 700; color: var(--verde); }
     .stat-u { font-size: 11px; color: var(--muted); }
-
     table { width: 100%; border-collapse: collapse; font-size: 12px; }
     thead th {
       padding: 8px 12px; text-align: left;
       font-size: 11px; color: var(--muted);
       text-transform: uppercase; letter-spacing: 0.4px;
-      border-bottom: 1px solid var(--borde);
-      background: var(--gris);
+      border-bottom: 1px solid var(--borde); background: var(--gris);
     }
     tbody tr { border-bottom: 1px solid var(--borde); transition: background .15s; }
     tbody tr:hover { background: var(--gris); }
     tbody tr:last-child { border-bottom: none; }
     tbody td { padding: 8px 12px; }
-    .badge {
-      display: inline-block; padding: 2px 8px;
-      border-radius: 10px; font-size: 11px; font-weight: 500;
-    }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 500; }
     .b-ok     { background: var(--verde-claro); color: var(--verde); }
     .b-warn   { background: #fff3cd; color: #856404; }
     .b-danger { background: #fde8e8; color: #a32d2d; }
-
     footer {
       text-align: center; padding: 14px;
       font-size: 12px; color: var(--muted);
       border-top: 1px solid var(--borde);
       background: white; margin-top: 8px;
     }
-
     @media (max-width: 768px) {
-      .metricas { grid-template-columns: repeat(2,1fr); }
+      .metricas, .metricas2 { grid-template-columns: repeat(2,1fr); }
       .row2, .row3 { grid-template-columns: 1fr; }
       header { flex-direction: column; gap: 10px; text-align: center; }
-      .header-right { text-align: center; }
     }
   </style>
 </head>
 <body>
-
 <header>
   <div class="header-left">
     <h1>🌿 Guardianes de Miraflores</h1>
@@ -138,6 +116,7 @@
 
 <div class="wrap">
 
+  <!-- Fila 1 — sensores principales -->
   <div class="metricas">
     <div class="met" id="c-tds">
       <div class="met-label">TDS — Sólidos disueltos</div>
@@ -165,6 +144,35 @@
     </div>
   </div>
 
+  <!-- Fila 2 — variables ambientales -->
+  <div class="metricas2">
+    <div class="met" id="c-temp">
+      <div class="met-label">Temperatura</div>
+      <div class="met-val" id="v-temp">--</div>
+      <div class="met-unit">°C</div>
+      <div class="met-badge" id="b-temp">--</div>
+    </div>
+    <div class="met" id="c-hum">
+      <div class="met-label">Humedad relativa</div>
+      <div class="met-val" id="v-hum">--</div>
+      <div class="met-unit">%</div>
+      <div class="met-badge" id="b-hum">--</div>
+    </div>
+    <div class="met" id="c-ec">
+      <div class="met-label">Conductividad</div>
+      <div class="met-val" id="v-ec">--</div>
+      <div class="met-unit">µS/cm</div>
+      <div class="met-badge" id="b-ec">--</div>
+    </div>
+    <div class="met" id="c-od">
+      <div class="met-label">Oxígeno disuelto</div>
+      <div class="met-val" id="v-od">--</div>
+      <div class="met-unit">mg/L</div>
+      <div class="met-badge" id="b-od">--</div>
+    </div>
+  </div>
+
+  <!-- Gráfica + estadísticas -->
   <div class="row2">
     <div class="card">
       <div class="card-head">
@@ -173,6 +181,9 @@
           <div class="tab on" onclick="cambiar('tds',this)">TDS</div>
           <div class="tab" onclick="cambiar('turbidez',this)">Turbidez</div>
           <div class="tab" onclick="cambiar('ph',this)">pH</div>
+          <div class="tab" onclick="cambiar('temperatura',this)">Temp</div>
+          <div class="tab" onclick="cambiar('conductividad',this)">EC</div>
+          <div class="tab" onclick="cambiar('oxigeno',this)">OD</div>
         </div>
       </div>
       <div class="card-body">
@@ -189,12 +200,13 @@
           <div class="stat"><div class="stat-l">Promedio</div><div class="stat-v" id="s-avg">--</div><div class="stat-u" id="s-avg-u">ppm</div></div>
           <div class="stat"><div class="stat-l">Máximo</div><div class="stat-v" id="s-max">--</div><div class="stat-u" id="s-max-u">ppm</div></div>
           <div class="stat"><div class="stat-l">Mínimo</div><div class="stat-v" id="s-min">--</div><div class="stat-u" id="s-min-u">ppm</div></div>
-          <div class="stat"><div class="stat-l">Lecturas hoy</div><div class="stat-v" id="s-count">0</div><div class="stat-u">registros</div></div>
+          <div class="stat"><div class="stat-l">Lecturas</div><div class="stat-v" id="s-count">0</div><div class="stat-u">registros</div></div>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- Tablas -->
   <div class="row3">
     <div class="card">
       <div class="card-head">
@@ -206,9 +218,9 @@
           <thead>
             <tr>
               <th>Fecha</th>
-              <th>TDS avg</th>
-              <th>Turbidez avg</th>
-              <th>pH avg</th>
+              <th>TDS</th>
+              <th>Turb.</th>
+              <th>pH</th>
               <th>Registros</th>
               <th>Calidad</th>
             </tr>
@@ -232,11 +244,14 @@
               <th>TDS</th>
               <th>Turb.</th>
               <th>pH</th>
+              <th>Temp</th>
+              <th>EC</th>
+              <th>OD</th>
               <th>Nivel</th>
             </tr>
           </thead>
           <tbody id="tabla-lect">
-            <tr><td colspan="5" style="text-align:center;padding:16px;color:#999">Esperando datos...</td></tr>
+            <tr><td colspan="8" style="text-align:center;padding:16px;color:#999">Esperando datos...</td></tr>
           </tbody>
         </table>
       </div>
@@ -246,7 +261,7 @@
 </div>
 
 <footer>
-  Guardianes de Miraflores · La Estrella, Antioquia · Datos guardados en Google Sheets · Actualización cada 10 segundos
+  Guardianes de Miraflores · La Estrella, Antioquia · Datos en Google Sheets · Actualización cada 10 segundos
 </footer>
 
 <script>
@@ -254,23 +269,25 @@
 
   let sensor_actual = 'tds';
   let chart;
-  let histTDS=[], histTurb=[], histPH=[], histLabels=[];
+  let hist = { tds:[], turbidez:[], ph:[], temperatura:[], conductividad:[], oxigeno:[], labels:[] };
 
-  // Reloj
   setInterval(() => {
     const n = new Date();
     document.getElementById('reloj').textContent = n.toLocaleTimeString('es-CO');
-    document.getElementById('fecha').textContent  = n.toLocaleDateString('es-CO',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+    document.getElementById('fecha').textContent = n.toLocaleDateString('es-CO',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
   }, 1000);
 
-  // Clasificaciones
-  const clsTDS  = v => v<300?['Excelente','ok']:v<600?['Buena','ok']:v<900?['Regular','warn']:['Contaminada','danger'];
-  const clsTurb = v => v<5?['Clara','ok']:v<50?['Lev. turbia','warn']:v<200?['Turbia','warn']:['Muy turbia','danger'];
-  const clsPH   = v => v<6.5?['Ácido','danger']:v<=8.5?['Neutro','ok']:['Básico','warn'];
-  const clsNiv  = v => v==='ALTO'?['Alto','ok']:['Bajo','warn'];
+  const clsTDS  = v => v<300?['Excelente','']:v<600?['Buena','']:v<900?['Regular','warn']:['Contaminada','danger'];
+  const clsTurb = v => v<5?['Clara','']:v<50?['Lev. turbia','warn']:v<200?['Turbia','warn']:['Muy turbia','danger'];
+  const clsPH   = v => v<6.5?['Ácido','danger']:v<=8.5?['Neutro','']:['Básico','warn'];
+  const clsNiv  = v => v==='ALTO'?['Alto','']:['Bajo','warn'];
+  const clsTemp = v => v<10?['Fría','warn']:v<=25?['Normal','']:['Cálida','warn'];
+  const clsHum  = v => v<40?['Baja','warn']:v<=80?['Normal','']:['Alta','warn'];
+  const clsEC   = v => v<200?['Muy pura','']:v<800?['Saludable','']:v<1500?['Mineral','warn']:['Alta','danger'];
+  const clsOD   = v => v<5?['Crítico','danger']:v<7?['Bajo','warn']:v<=12?['Normal','']:['Alto',''];
   const clsCal  = v => v==='Buena'?'b-ok':v==='Regular'?'b-warn':'b-danger';
 
-  function setMet(id, val, unit, label, cls) {
+  function setMet(id, val, label, cls) {
     document.getElementById('v-'+id).textContent = val;
     document.getElementById('b-'+id).textContent = label;
     const c = document.getElementById('c-'+id);
@@ -279,7 +296,6 @@
     if (cls==='danger') c.classList.add('danger');
   }
 
-  // Gráfica
   function initChart() {
     const ctx = document.getElementById('grafica').getContext('2d');
     chart = new Chart(ctx, {
@@ -290,10 +306,7 @@
           data: [],
           borderColor: '#0f6e56',
           backgroundColor: 'rgba(15,110,86,0.07)',
-          borderWidth: 2,
-          tension: 0.4,
-          pointRadius: 2,
-          fill: true
+          borderWidth: 2, tension: 0.4, pointRadius: 2, fill: true
         }]
       },
       options: {
@@ -311,24 +324,22 @@
     sensor_actual = sensor;
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
     btn.classList.add('on');
-    const unidades = { tds:'ppm', turbidez:'NTU', ph:'' };
-    document.getElementById('stat-sensor').textContent = sensor.toUpperCase() + ' (' + unidades[sensor] + ')';
+    const unidades = { tds:'ppm', turbidez:'NTU', ph:'', temperatura:'°C', conductividad:'µS/cm', oxigeno:'mg/L' };
+    document.getElementById('stat-sensor').textContent = sensor.toUpperCase() + ' (' + (unidades[sensor]||'') + ')';
     actualizarChart();
   }
 
   function actualizarChart() {
-    const map = { tds: histTDS, turbidez: histTurb, ph: histPH };
-    const datos = map[sensor_actual];
-    chart.data.labels = histLabels;
+    const datos = hist[sensor_actual];
+    chart.data.labels = hist.labels;
     chart.data.datasets[0].data = datos;
     chart.update();
-
     if (datos.length > 0) {
       const avg = (datos.reduce((a,b)=>a+b,0)/datos.length).toFixed(1);
       const max = Math.max(...datos).toFixed(1);
       const min = Math.min(...datos).toFixed(1);
-      const unidades = { tds:'ppm', turbidez:'NTU', ph:'' };
-      const u = unidades[sensor_actual];
+      const unidades = { tds:'ppm', turbidez:'NTU', ph:'', temperatura:'°C', conductividad:'µS/cm', oxigeno:'mg/L' };
+      const u = unidades[sensor_actual] || '';
       document.getElementById('s-avg').textContent = avg;
       document.getElementById('s-max').textContent = max;
       document.getElementById('s-min').textContent = min;
@@ -342,51 +353,63 @@
     try {
       const res = await fetch(API);
       const d   = await res.json();
-
-      // Métricas actuales
       const act = d.actual;
+
       if (act && act.tds !== undefined) {
-        const [tL,tC]  = clsTDS(act.tds);
-        const [tbL,tbC]= clsTurb(act.turbidez);
-        const [pL,pC]  = clsPH(act.ph);
-        const [nL,nC]  = clsNiv(act.nivel);
-        setMet('tds',   act.tds.toFixed(1),   'ppm', tL,  tC);
-        setMet('turb',  act.turbidez.toFixed(1),'NTU', tbL, tbC);
-        setMet('ph',    act.ph.toFixed(2),     '',    pL,  pC);
-        setMet('nivel', act.nivel,             '',    nL,  nC);
+        const [tL,tC]   = clsTDS(act.tds);
+        const [tbL,tbC] = clsTurb(act.turbidez);
+        const [pL,pC]   = clsPH(act.ph);
+        const [nL,nC]   = clsNiv(act.nivel);
+        const [teL,teC] = clsTemp(act.temperatura||25);
+        const [hL,hC]   = clsHum(act.humedad||0);
+        const [eL,eC]   = clsEC(act.conductividad||0);
+        const [oL,oC]   = clsOD(act.oxigeno||0);
+
+        setMet('tds',   (act.tds||0).toFixed(1),           tL,  tC);
+        setMet('turb',  (act.turbidez||0).toFixed(1),      tbL, tbC);
+        setMet('ph',    (act.ph||0).toFixed(2),            pL,  pC);
+        setMet('nivel', act.nivel||'--',                   nL,  nC);
+        setMet('temp',  (act.temperatura||0)+'',           teL, teC);
+        setMet('hum',   (act.humedad||0)+'',               hL,  hC);
+        setMet('ec',    (act.conductividad||0).toFixed(1), eL,  eC);
+        setMet('od',    (act.oxigeno||0).toFixed(2),       oL,  oC);
       }
 
-      // Historial para gráfica
       if (d.lecturas && d.lecturas.length > 0) {
-        histLabels = d.lecturas.map(l => l.hora);
-        histTDS    = d.lecturas.map(l => l.tds);
-        histTurb   = d.lecturas.map(l => l.turbidez);
-        histPH     = d.lecturas.map(l => l.ph);
+        hist.labels       = d.lecturas.map(l => l.hora);
+        hist.tds          = d.lecturas.map(l => parseFloat(l.tds)||0);
+        hist.turbidez     = d.lecturas.map(l => parseFloat(l.turbidez)||0);
+        hist.ph           = d.lecturas.map(l => parseFloat(l.ph)||0);
+        hist.temperatura  = d.lecturas.map(l => parseFloat(l.temperatura)||0);
+        hist.conductividad= d.lecturas.map(l => parseFloat(l.conductividad)||0);
+        hist.oxigeno      = d.lecturas.map(l => parseFloat(l.oxigeno)||0);
         actualizarChart();
 
-        // Tabla lecturas
         document.getElementById('s-count').textContent = d.lecturas.length;
         document.getElementById('total-lect').textContent = d.lecturas.length + ' registros';
+
         const filas = [...d.lecturas].reverse().slice(0,30);
         document.getElementById('tabla-lect').innerHTML = filas.map(f => `
           <tr>
             <td>${f.hora}</td>
-            <td>${parseFloat(f.tds).toFixed(1)}</td>
-            <td>${parseFloat(f.turbidez).toFixed(1)}</td>
-            <td>${parseFloat(f.ph).toFixed(2)}</td>
-            <td>${f.nivel}</td>
+            <td>${parseFloat(f.tds||0).toFixed(1)}</td>
+            <td>${parseFloat(f.turbidez||0).toFixed(1)}</td>
+            <td>${parseFloat(f.ph||0).toFixed(2)}</td>
+            <td>${f.temperatura||'--'}°C</td>
+            <td>${parseFloat(f.conductividad||0).toFixed(1)}</td>
+            <td>${parseFloat(f.oxigeno||0).toFixed(2)}</td>
+            <td>${f.nivel||'--'}</td>
           </tr>
         `).join('');
       }
 
-      // Resumen diario
       if (d.promedios && d.promedios.length > 0) {
         document.getElementById('tabla-diario').innerHTML = [...d.promedios].reverse().map(p => `
           <tr>
             <td>${p.fecha}</td>
-            <td>${parseFloat(p.tds).toFixed(1)}</td>
-            <td>${parseFloat(p.turbidez).toFixed(1)}</td>
-            <td>${parseFloat(p.ph).toFixed(2)}</td>
+            <td>${parseFloat(p.tds||0).toFixed(1)}</td>
+            <td>${parseFloat(p.turbidez||0).toFixed(1)}</td>
+            <td>${parseFloat(p.ph||0).toFixed(2)}</td>
             <td>${p.registros}</td>
             <td><span class="badge ${clsCal(p.calidad)}">${p.calidad}</span></td>
           </tr>
