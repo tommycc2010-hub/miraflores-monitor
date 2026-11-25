@@ -304,6 +304,27 @@
   const clsOD   = v => v<5?['Crítico','danger']:v<7?['Bajo','warn']:v<=12?['Normal','']:['Alto',''];
   const clsCal  = v => v==='Buena'?'b-ok':v==='Regular'?'b-warn':'b-danger';
 
+  // Escapa texto que viene de la hoja antes de insertarlo como HTML.
+  const ESC = { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' };
+  const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ESC[c]);
+
+  // Sheets envía las celdas de solo-hora como fechas de 1899 en UTC y las
+  // fechas como medianoche local en UTC; se muestran en hora de Colombia.
+  const ZONA = 'America/Bogota';
+  const aFecha = v => { const d = new Date(v); return isNaN(d) ? null : d; };
+  const fmtHora = v => {
+    const d = aFecha(v);
+    return d ? d.toLocaleTimeString('es-CO', { timeZone: ZONA, hour12: false }) : String(v ?? '--');
+  };
+  const fmtFecha = v => {
+    const d = aFecha(v);
+    return d ? d.toLocaleDateString('es-CO', { timeZone: ZONA, day: '2-digit', month: '2-digit', year: 'numeric' }) : String(v ?? '--');
+  };
+  const fmtDiaHora = l => `${fmtFecha(l.fecha).slice(0, 5)} ${fmtHora(l.hora)}`;
+
+  // El Apps Script devuelve el mismo día repetido; se conserva una fila por fecha.
+  const unicosPorFecha = filas => [...new Map(filas.map(p => [fmtFecha(p.fecha), p])).values()];
+
   function setMet(id, val, label, cls) {
     document.getElementById('v-'+id).textContent = val;
     document.getElementById('b-'+id).textContent = label;
@@ -357,8 +378,8 @@
         <div class="alerta alerta-${a.tipo}">
           <div class="alerta-icon">${a.icono}</div>
           <div>
-            <div class="alerta-titulo">${a.titulo}</div>
-            <div class="alerta-desc">${a.desc}</div>
+            <div class="alerta-titulo">${esc(a.titulo)}</div>
+            <div class="alerta-desc">${esc(a.desc)}</div>
           </div>
         </div>
       `).join('');
@@ -446,7 +467,7 @@
       }
 
       if (d.lecturas && d.lecturas.length > 0) {
-        hist.labels        = d.lecturas.map(l => l.hora);
+        hist.labels        = d.lecturas.map(fmtDiaHora);
         hist.tds           = d.lecturas.map(l => parseFloat(l.tds)||0);
         hist.turbidez      = d.lecturas.map(l => parseFloat(l.turbidez)||0);
         hist.ph            = d.lecturas.map(l => parseFloat(l.ph)||0);
@@ -461,27 +482,27 @@
         const filas = [...d.lecturas].reverse().slice(0,30);
         document.getElementById('tabla-lect').innerHTML = filas.map(f => `
           <tr>
-            <td>${f.hora}</td>
+            <td>${esc(fmtDiaHora(f))}</td>
             <td>${parseFloat(f.tds||0).toFixed(1)}</td>
             <td>${parseFloat(f.turbidez||0).toFixed(1)}</td>
             <td>${parseFloat(f.ph||0).toFixed(2)}</td>
-            <td>${f.temperatura||'--'}°C</td>
+            <td>${esc(f.temperatura||'--')}°C</td>
             <td>${parseFloat(f.conductividad||0).toFixed(1)}</td>
             <td>${parseFloat(f.oxigeno||0).toFixed(2)}</td>
-            <td>${f.nivel||'--'}</td>
+            <td>${esc(f.nivel||'--')}</td>
           </tr>
         `).join('');
       }
 
       if (d.promedios && d.promedios.length > 0) {
-        document.getElementById('tabla-diario').innerHTML = [...d.promedios].reverse().map(p => `
+        document.getElementById('tabla-diario').innerHTML = unicosPorFecha(d.promedios).reverse().map(p => `
           <tr>
-            <td>${p.fecha}</td>
+            <td>${esc(fmtFecha(p.fecha))}</td>
             <td>${parseFloat(p.tds||0).toFixed(1)}</td>
             <td>${parseFloat(p.turbidez||0).toFixed(1)}</td>
             <td>${parseFloat(p.ph||0).toFixed(2)}</td>
-            <td>${p.registros}</td>
-            <td><span class="badge ${clsCal(p.calidad)}">${p.calidad}</span></td>
+            <td>${esc(p.registros)}</td>
+            <td><span class="badge ${clsCal(p.calidad)}">${esc(p.calidad)}</span></td>
           </tr>
         `).join('');
       }
