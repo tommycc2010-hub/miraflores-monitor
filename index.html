@@ -123,6 +123,13 @@
   </section>
 
   <section class="bloque">
+    <h2 class="titulo-seccion">Todas las variables juntas</h2>
+    <p class="explica-todas">Cada línea se muestra como porcentaje de su propia escala, porque se miden en unidades distintas. Pasa el cursor o toca la gráfica para ver los valores reales. Toca una variable para ocultarla o mostrarla. Si un valor supera su 100 %, la línea se queda en el borde superior.</p>
+    <div class="leyenda-todas" id="leyenda-todas" role="group" aria-label="Variables visibles en la gráfica"></div>
+    <div class="grafica-todas"><canvas id="grafica-todas" role="img" aria-label="Gráfica con todas las variables de las últimas lecturas. Los valores también están en la tabla de últimas lecturas."></canvas></div>
+  </section>
+
+  <section class="bloque">
     <h2 class="titulo-seccion" id="titulo-historial">Historial de turbidez</h2>
     <div class="tabs" role="group" aria-label="Variable de la gráfica">
       <button type="button" class="tab" data-sensor="turbidez" aria-pressed="true">Turbidez</button>
@@ -187,6 +194,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="static/datos.js"></script>
 <script src="static/extras.js"></script>
+<script src="static/comparativa.js"></script>
 <script src="static/animaciones.js"></script>
 </body>
 </html>
