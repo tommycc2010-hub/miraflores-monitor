@@ -4,521 +4,189 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Guardianes de Miraflores</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-  <style>
-    :root {
-      --verde: #0f6e56;
-      --verde2: #1a9070;
-      --verde-claro: #e2f5ee;
-      --gris: #f4f6f4;
-      --borde: #e0e7e0;
-      --texto: #1a2e1a;
-      --muted: #6b7c6b;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--gris); color: var(--texto); }
-    header {
-      background: linear-gradient(135deg, #0a5240, #1a9070);
-      color: white; padding: 16px 32px;
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .header-left h1 { font-size: 20px; font-weight: 700; }
-    .header-left p  { font-size: 12px; opacity: 0.75; margin-top: 2px; }
-    .header-right   { text-align: right; }
-    #reloj { font-size: 24px; font-weight: 700; }
-    #fecha { font-size: 11px; opacity: 0.8; margin-top: 2px; }
-    .conexion { font-size: 11px; margin-top: 4px; }
-    .wrap { max-width: 1200px; margin: 0 auto; padding: 20px; }
-    .metricas  { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
-    .metricas2 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
-    .met {
-      background: white; border-radius: 12px;
-      padding: 16px 18px; border: 1px solid var(--borde);
-      border-left: 4px solid var(--verde);
-    }
-    .met.warn   { border-left-color: #e9a700; }
-    .met.danger { border-left-color: #d63030; }
-    .met-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-    .met-val   { font-size: 28px; font-weight: 700; color: var(--verde); line-height: 1; }
-    .met.warn   .met-val { color: #e9a700; }
-    .met.danger .met-val { color: #d63030; }
-    .met-unit  { font-size: 12px; color: var(--muted); margin-top: 2px; }
-    .met-badge {
-      display: inline-block; margin-top: 8px;
-      padding: 2px 10px; border-radius: 20px;
-      font-size: 11px; font-weight: 500;
-      background: var(--verde-claro); color: var(--verde);
-    }
-    .met.warn   .met-badge { background: #fff3cd; color: #856404; }
-    .met.danger .met-badge { background: #fde8e8; color: #a32d2d; }
-
-    /* ── Alertas ── */
-    #alertas { margin-bottom: 20px; }
-    .alerta {
-      display: flex; align-items: flex-start; gap: 12px;
-      padding: 14px 18px; border-radius: 12px; margin-bottom: 10px;
-      animation: aparecer 0.4s ease;
-    }
-    @keyframes aparecer { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
-    .alerta-danger {
-      background: #fff0f0;
-      border: 1.5px solid #d63030;
-      color: #7a1010;
-    }
-    .alerta-warn {
-      background: #fffbec;
-      border: 1.5px solid #e9a700;
-      color: #6b4200;
-    }
-    .alerta-ok {
-      background: var(--verde-claro);
-      border: 1.5px solid #0f6e56;
-      color: #0a3d2e;
-    }
-    .alerta-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
-    .alerta-titulo { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
-    .alerta-desc   { font-size: 12px; line-height: 1.5; }
-
-    .row2 { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; margin-bottom: 20px; }
-    .row3 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-    .card { background: white; border-radius: 12px; border: 1px solid var(--borde); overflow: hidden; }
-    .card-head {
-      padding: 12px 18px; border-bottom: 1px solid var(--borde);
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .card-head h2 { font-size: 14px; font-weight: 600; }
-    .card-head span { font-size: 11px; color: var(--muted); }
-    .card-body { padding: 16px 18px; }
-    .tabs { display: flex; gap: 6px; flex-wrap: wrap; }
-    .tab {
-      padding: 4px 12px; border-radius: 20px; font-size: 11px;
-      cursor: pointer; border: 1px solid var(--borde);
-      background: white; color: var(--muted);
-    }
-    .tab.on { background: var(--verde); color: white; border-color: var(--verde); }
-    .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .stat { background: var(--gris); border-radius: 8px; padding: 10px 12px; }
-    .stat-l { font-size: 11px; color: var(--muted); margin-bottom: 3px; }
-    .stat-v { font-size: 20px; font-weight: 700; color: var(--verde); }
-    .stat-u { font-size: 11px; color: var(--muted); }
-    table { width: 100%; border-collapse: collapse; font-size: 12px; }
-    thead th {
-      padding: 8px 12px; text-align: left;
-      font-size: 11px; color: var(--muted);
-      text-transform: uppercase; letter-spacing: 0.4px;
-      border-bottom: 1px solid var(--borde); background: var(--gris);
-    }
-    tbody tr { border-bottom: 1px solid var(--borde); transition: background .15s; }
-    tbody tr:hover { background: var(--gris); }
-    tbody tr:last-child { border-bottom: none; }
-    tbody td { padding: 8px 12px; }
-    .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 500; }
-    .b-ok     { background: var(--verde-claro); color: var(--verde); }
-    .b-warn   { background: #fff3cd; color: #856404; }
-    .b-danger { background: #fde8e8; color: #a32d2d; }
-    footer {
-      text-align: center; padding: 14px;
-      font-size: 12px; color: var(--muted);
-      border-top: 1px solid var(--borde);
-      background: white; margin-top: 8px;
-    }
-    @media (max-width: 768px) {
-      .metricas, .metricas2 { grid-template-columns: repeat(2,1fr); }
-      .row2, .row3 { grid-template-columns: 1fr; }
-      header { flex-direction: column; gap: 10px; text-align: center; }
-    }
-  </style>
+  <meta name="description" content="Monitoreo comunitario de la quebrada en la Reserva Miraflores, La Estrella, Antioquia.">
+  <meta name="theme-color" content="#071a1c">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23071a1c'/%3E%3Cpath d='M16 5c5 7 8 11 8 15a8 8 0 0 1-16 0c0-4 3-8 8-15z' fill='%2358c6c0'/%3E%3C/svg%3E">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Guardianes de Miraflores">
+  <meta property="og:description" content="Monitoreo comunitario de la quebrada en La Estrella, Antioquia.">
+  <meta property="og:image" content="https://miraflores-monitor.onrender.com/static/fondo-nocturno.jpg">
+  <link rel="preload" as="image" href="static/fondo-nocturno.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <link rel="stylesheet" href="static/estilos.css">
+  <link rel="stylesheet" href="static/extras.css">
 </head>
 <body>
-<header>
-  <div class="header-left">
-    <h1>🌿 Guardianes de Miraflores</h1>
-    <p>Monitoreo de quebradas — La Estrella, Antioquia</p>
-  </div>
-  <div class="header-right">
-    <div id="reloj">--:--:--</div>
-    <div id="fecha">--</div>
-    <div class="conexion">● <span id="estado" style="color:#a8f0d0">Conectando...</span></div>
+<a class="saltar" href="#recorrido">Saltar a las lecturas</a>
+<div class="caudal" aria-hidden="true"><span></span></div>
+
+<header class="portada">
+  <div class="portada-fondo" aria-hidden="true"></div>
+  <div class="luciernagas" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="portada-texto">
+    <h1>Guardianes de Miraflores</h1>
+    <p class="lugar">Monitoreo de quebradas en La Estrella, Antioquia</p>
+    <div class="estado-general" id="estado-general" aria-live="polite">
+      <h2 id="estado-titulo">Consultando la quebrada…</h2>
+      <p id="ultima-lectura">Última lectura: --</p>
+    </div>
+    <p class="conexion"><span id="estado">Conectando...</span></p>
+    <a class="bajar" href="#recorrido">Bajar por la quebrada ↓</a>
   </div>
 </header>
 
-<div class="wrap">
+<main id="recorrido">
+  <section class="frase"><p>Esto fue lo que contó el agua en su última medición. Baja despacio y escúchala, variable por variable.</p></section>
 
-  <div class="metricas">
-    <div class="met" id="c-tds">
-      <div class="met-label">TDS — Sólidos disueltos</div>
-      <div class="met-val" id="v-tds">--</div>
-      <div class="met-unit">ppm</div>
-      <div class="met-badge" id="b-tds">--</div>
+  <section class="escena" id="c-turb" style="--tono:#2a2414">
+    <span class="marca-agua" aria-hidden="true">turbidez</span>
+    <div class="lectura">
+      <h3>La claridad del agua</h3>
+      <strong class="numero" id="v-turb">--</strong>
+      <p class="unidad">NTU, turbidez</p>
+      <p class="veredicto" id="b-turb">--</p>
+      <p class="explica">Cuanto más sedimento arrastra la quebrada, más café se ve el frasco. Las lluvias y la erosión suben este número.</p>
     </div>
-    <div class="met" id="c-turb">
-      <div class="met-label">Turbidez</div>
-      <div class="met-val" id="v-turb">--</div>
-      <div class="met-unit">NTU</div>
-      <div class="met-badge" id="b-turb">--</div>
+    <div class="instrumento"><div class="instrumento-flota"><div class="frasco" aria-hidden="true"><div class="liquido"></div><div id="particulas"></div></div></div></div>
+  </section>
+  <section class="escena" id="c-ph" style="--tono:#122c24">
+    <span class="marca-agua" aria-hidden="true">pH</span>
+    <div class="lectura">
+      <h3>La acidez</h3>
+      <strong class="numero" id="v-ph">--</strong>
+      <p class="unidad">pH, de 0 a 14</p>
+      <p class="veredicto" id="b-ph">--</p>
+      <p class="explica">Entre 6,5 y 8,5 la vida acuática está cómoda. Por debajo el agua es ácida y por encima es básica.</p>
     </div>
-    <div class="met" id="c-ph">
-      <div class="met-label">pH del agua</div>
-      <div class="met-val" id="v-ph">--</div>
-      <div class="met-unit">potencial de hidrógeno</div>
-      <div class="met-badge" id="b-ph">--</div>
+    <div class="instrumento"><div class="instrumento-flota"><div class="escala-ph" aria-hidden="true"><div class="barra-ph"></div><div class="riel-ph"><div class="aguja"></div></div><div class="marcas"><span>0 ácido</span><span>7</span><span>14 básico</span></div></div></div></div>
+  </section>
+  <section class="escena" id="c-od" style="--tono:#0a3038">
+    <span class="marca-agua" aria-hidden="true">oxígeno</span>
+    <div class="lectura">
+      <h3>El aire que hay bajo el agua</h3>
+      <strong class="numero" id="v-od">--</strong>
+      <p class="unidad">mg/L de oxígeno disuelto</p>
+      <p class="veredicto" id="b-od">--</p>
+      <p class="explica">Es lo que respiran los peces y los insectos de la quebrada. Más burbujas significa más oxígeno.</p>
     </div>
-    <div class="met" id="c-nivel">
-      <div class="met-label">Nivel del agua</div>
-      <div class="met-val" id="v-nivel">--</div>
-      <div class="met-unit">sensor flotador</div>
-      <div class="met-badge" id="b-nivel">--</div>
+    <div class="instrumento"><div class="instrumento-flota"><div class="pecera" aria-hidden="true"><div id="burbujas"></div></div></div></div>
+  </section>
+  <section class="escena" id="c-temp" style="--tono:#2b2019">
+    <span class="marca-agua" aria-hidden="true">temperatura</span>
+    <div class="lectura">
+      <h3>La temperatura</h3>
+      <strong class="numero" id="v-temp">--</strong>
+      <p class="unidad">°C</p>
+      <p class="veredicto" id="b-temp">--</p>
+      <p class="explica">El agua caliente guarda menos oxígeno. Los árboles de la orilla ayudan a mantenerla fresca.</p>
     </div>
-  </div>
+    <div class="instrumento"><div class="instrumento-flota"><div class="termometro" aria-hidden="true"><div class="mercurio"></div><div class="grados"><span>40 °C</span><span>20 °C</span><span>0 °C</span></div></div></div></div>
+  </section>
+  <section class="escena" id="c-nivel" style="--tono:#0b2740">
+    <span class="marca-agua" aria-hidden="true">nivel</span>
+    <div class="lectura">
+      <h3>Hasta dónde llega el agua</h3>
+      <strong class="numero" id="v-nivel">--</strong>
+      <p class="unidad">sensor flotador</p>
+      <p class="veredicto" id="b-nivel">--</p>
+      <p class="explica">El flotador avisa si la quebrada está alta o baja.</p>
+    </div>
+    <div class="instrumento"><div class="instrumento-flota"><div class="tanque" aria-hidden="true"><div class="marea"></div></div></div></div>
+  </section>
 
-  <div class="metricas2">
-    <div class="met" id="c-temp">
-      <div class="met-label">Temperatura</div>
-      <div class="met-val" id="v-temp">--</div>
-      <div class="met-unit">°C</div>
-      <div class="met-badge" id="b-temp">--</div>
-    </div>
-    <div class="met" id="c-hum">
-      <div class="met-label">Humedad relativa</div>
-      <div class="met-val" id="v-hum">--</div>
-      <div class="met-unit">%</div>
-      <div class="met-badge" id="b-hum">--</div>
-    </div>
-    <div class="met" id="c-ec">
-      <div class="met-label">Conductividad</div>
-      <div class="met-val" id="v-ec">--</div>
-      <div class="met-unit">µS/cm</div>
-      <div class="met-badge" id="b-ec">--</div>
-    </div>
-    <div class="met" id="c-od">
-      <div class="met-label">Oxígeno disuelto</div>
-      <div class="met-val" id="v-od">--</div>
-      <div class="met-unit">mg/L</div>
-      <div class="met-badge" id="b-od">--</div>
-    </div>
-  </div>
+  <section class="bloque">
+    <h2 class="titulo-seccion">Lo que no se ve</h2>
+    <ul class="gotas">
+      <li class="gota" id="c-tds">
+        <div><h3>Sólidos disueltos (TDS)</h3><p>Minerales y sales disueltos, en ppm.</p></div>
+        <strong class="gota-valor" id="v-tds">--</strong>
+        <span class="veredicto" id="b-tds">--</span>
+      </li>
+      <li class="gota" id="c-ec">
+        <div><h3>Conductividad</h3><p>Cuántos iones lleva el agua, en µS/cm.</p></div>
+        <strong class="gota-valor" id="v-ec">--</strong>
+        <span class="veredicto" id="b-ec">--</span>
+      </li>
+      <li class="gota" id="c-hum">
+        <div><h3>Humedad relativa</h3><p>Humedad del aire junto a la quebrada, en %.</p></div>
+        <strong class="gota-valor" id="v-hum">--</strong>
+        <span class="veredicto" id="b-hum">--</span>
+      </li>
+    </ul>
+  </section>
 
-  <!-- Panel de alertas -->
-  <div id="alertas"></div>
+  <section class="bloque">
+    <h2 class="titulo-seccion">Avisos de la quebrada</h2>
+    <ul id="alertas"></ul>
+  </section>
 
-  <div class="row2">
-    <div class="card">
-      <div class="card-head">
-        <h2>Historial de lecturas</h2>
-        <div class="tabs">
-          <div class="tab on" onclick="cambiar('tds',this)">TDS</div>
-          <div class="tab" onclick="cambiar('turbidez',this)">Turbidez</div>
-          <div class="tab" onclick="cambiar('ph',this)">pH</div>
-          <div class="tab" onclick="cambiar('temperatura',this)">Temp</div>
-          <div class="tab" onclick="cambiar('conductividad',this)">EC</div>
-          <div class="tab" onclick="cambiar('oxigeno',this)">OD</div>
+  <section class="bloque">
+    <h2 class="titulo-seccion" id="titulo-historial">Historial de turbidez</h2>
+    <div class="tabs" role="group" aria-label="Variable de la gráfica">
+      <button type="button" class="tab" data-sensor="turbidez" aria-pressed="true">Turbidez</button>
+      <button type="button" class="tab" data-sensor="ph" aria-pressed="false">pH</button>
+      <button type="button" class="tab" data-sensor="oxigeno" aria-pressed="false">Oxígeno</button>
+      <button type="button" class="tab" data-sensor="temperatura" aria-pressed="false">Temperatura</button>
+      <button type="button" class="tab" data-sensor="tds" aria-pressed="false">TDS</button>
+      <button type="button" class="tab" data-sensor="conductividad" aria-pressed="false">Conductividad</button>
+    </div>
+    <div class="historial-cuerpo">
+      <div class="grafica-panel">
+        <div class="grafica-caja"><canvas id="grafica" role="img" aria-label="Gráfica del historial de lecturas"></canvas></div>
+        <div class="opciones-grafica">
+          <label hidden><input type="checkbox" id="recortar" checked> Acercar a los valores habituales</label>
+          <span id="nota-grafica" aria-live="polite"></span>
         </div>
       </div>
-      <div class="card-body">
-        <canvas id="grafica" height="160"></canvas>
+      <div class="mapa-panel">
+        <div id="mapa" role="region" aria-label="Mapa de la Reserva ecológica Miraflores"></div>
+        <p>Reserva ecológica Miraflores: 6.114136, -75.620582.
+          <a href="https://www.google.com/maps?q=6.1141364,-75.6205823" target="_blank" rel="noopener">Abrir en Google Maps</a></p>
       </div>
     </div>
-    <div class="card">
-      <div class="card-head">
-        <h2>Estadísticas</h2>
-        <span id="stat-sensor">TDS (ppm)</span>
-      </div>
-      <div class="card-body">
-        <div class="stats">
-          <div class="stat"><div class="stat-l">Promedio</div><div class="stat-v" id="s-avg">--</div><div class="stat-u" id="s-avg-u">ppm</div></div>
-          <div class="stat"><div class="stat-l">Máximo</div><div class="stat-v" id="s-max">--</div><div class="stat-u" id="s-max-u">ppm</div></div>
-          <div class="stat"><div class="stat-l">Mínimo</div><div class="stat-v" id="s-min">--</div><div class="stat-u" id="s-min-u">ppm</div></div>
-          <div class="stat"><div class="stat-l">Lecturas</div><div class="stat-v" id="s-count">0</div><div class="stat-u">registros</div></div>
-        </div>
-      </div>
+    <div class="resumen">
+      <div class="dato"><span>Promedio</span><strong id="s-avg">--</strong><em id="s-avg-u">NTU</em></div>
+      <div class="dato"><span>Máximo</span><strong id="s-max">--</strong><em id="s-max-u">NTU</em></div>
+      <div class="dato"><span>Mínimo</span><strong id="s-min">--</strong><em id="s-min-u">NTU</em></div>
+      <div class="dato"><span>Lecturas</span><strong id="s-count">0</strong><em>registros</em></div>
     </div>
-  </div>
+  </section>
 
-  <div class="row3">
-    <div class="card">
-      <div class="card-head">
-        <h2>Resumen diario</h2>
-        <span>Últimos 7 días</span>
-      </div>
-      <div class="card-body" style="padding:0;overflow-x:auto">
-        <table>
-          <thead>
-            <tr>
-              <th>Fecha</th><th>TDS</th><th>Turb.</th>
-              <th>pH</th><th>Registros</th><th>Calidad</th>
-            </tr>
-          </thead>
-          <tbody id="tabla-diario">
-            <tr><td colspan="6" style="text-align:center;padding:16px;color:#999">Sin datos aún</td></tr>
-          </tbody>
-        </table>
-      </div>
+  <section class="bloque">
+    <h2 class="titulo-seccion">La bitácora</h2>
+    <button type="button" class="tab descargar" id="descargar" hidden>Descargar lecturas (CSV)</button>
+    <div class="tabla">
+      <h3>Resumen diario</h3>
+      <p>Promedios por fecha</p>
+      <div class="tabla-scroll"><table>
+        <thead><tr><th>Fecha</th><th>TDS</th><th>Turbidez</th><th>pH</th><th>Registros</th><th>Calidad</th></tr></thead>
+        <tbody id="tabla-diario"><tr><td colspan="6">Sin datos aún</td></tr></tbody>
+      </table></div>
     </div>
-    <div class="card">
-      <div class="card-head">
-        <h2>Últimas lecturas</h2>
-        <span id="total-lect">0 registros</span>
-      </div>
-      <div class="card-body" style="padding:0;overflow-x:auto;max-height:280px;overflow-y:auto">
-        <table>
-          <thead>
-            <tr>
-              <th>Hora</th><th>TDS</th><th>Turb.</th>
-              <th>pH</th><th>Temp</th><th>EC</th><th>OD</th><th>Nivel</th>
-            </tr>
-          </thead>
-          <tbody id="tabla-lect">
-            <tr><td colspan="8" style="text-align:center;padding:16px;color:#999">Esperando datos...</td></tr>
-          </tbody>
-        </table>
-      </div>
+    <div class="tabla">
+      <h3>Últimas lecturas</h3>
+      <p id="total-lect">0 registros</p>
+      <div class="tabla-scroll"><table>
+        <thead><tr><th>Fecha y hora</th><th>TDS</th><th>Turbidez</th><th>pH</th><th>Temp.</th><th>EC</th><th>Oxígeno</th><th>Nivel</th></tr></thead>
+        <tbody id="tabla-lect"><tr><td colspan="8">Esperando datos...</td></tr></tbody>
+      </table></div>
     </div>
-  </div>
+  </section>
+</main>
 
-</div>
-
-<footer>
-  Guardianes de Miraflores · La Estrella, Antioquia · Datos en Google Sheets · Actualización cada 10 segundos
+<footer class="pie">
+  <strong>Cuidemos la quebrada</strong>
+  <p>Guardianes de Miraflores, La Estrella, Antioquia. Datos en Google Sheets, se consultan cada 10 segundos.</p>
 </footer>
 
-<script>
-  const API = "https://script.google.com/macros/s/AKfycbwTrhFETmZhlzBCHZmjIb2B1ik6EJE8176H68b0uzzq-WMYGlEVbDSN33dNkgPMCCrf3w/exec";
-
-  let sensor_actual = 'tds';
-  let chart;
-  let hist = { tds:[], turbidez:[], ph:[], temperatura:[], conductividad:[], oxigeno:[], labels:[] };
-
-  setInterval(() => {
-    const n = new Date();
-    document.getElementById('reloj').textContent = n.toLocaleTimeString('es-CO');
-    document.getElementById('fecha').textContent = n.toLocaleDateString('es-CO',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-  }, 1000);
-
-  const clsTDS  = v => v<300?['Excelente','']:v<600?['Buena','']:v<900?['Regular','warn']:['Contaminada','danger'];
-  const clsTurb = v => v<5?['Clara','']:v<50?['Lev. turbia','warn']:v<200?['Turbia','warn']:['Muy turbia','danger'];
-  const clsPH   = v => v<6.5?['Ácido','danger']:v<=8.5?['Neutro','']:['Básico','warn'];
-  const clsNiv  = v => v==='ALTO'?['Alto','']:['Bajo','warn'];
-  const clsTemp = v => v<10?['Fría','warn']:v<=25?['Normal','']:['Cálida','warn'];
-  const clsHum  = v => v<40?['Baja','warn']:v<=80?['Normal','']:['Alta','warn'];
-  const clsEC   = v => v<200?['Muy pura','']:v<800?['Saludable','']:v<1500?['Mineral','warn']:['Alta','danger'];
-  const clsOD   = v => v<5?['Crítico','danger']:v<7?['Bajo','warn']:v<=12?['Normal','']:['Alto',''];
-  const clsCal  = v => v==='Buena'?'b-ok':v==='Regular'?'b-warn':'b-danger';
-
-  // Escapa texto que viene de la hoja antes de insertarlo como HTML.
-  const ESC = { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' };
-  const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ESC[c]);
-
-  // Sheets envía las celdas de solo-hora como fechas de 1899 en UTC y las
-  // fechas como medianoche local en UTC; se muestran en hora de Colombia.
-  const ZONA = 'America/Bogota';
-  const aFecha = v => { const d = new Date(v); return isNaN(d) ? null : d; };
-  const fmtHora = v => {
-    const d = aFecha(v);
-    return d ? d.toLocaleTimeString('es-CO', { timeZone: ZONA, hour12: false }) : String(v ?? '--');
-  };
-  const fmtFecha = v => {
-    const d = aFecha(v);
-    return d ? d.toLocaleDateString('es-CO', { timeZone: ZONA, day: '2-digit', month: '2-digit', year: 'numeric' }) : String(v ?? '--');
-  };
-  const fmtDiaHora = l => `${fmtFecha(l.fecha).slice(0, 5)} ${fmtHora(l.hora)}`;
-
-  // El Apps Script devuelve el mismo día repetido; se conserva una fila por fecha.
-  const unicosPorFecha = filas => [...new Map(filas.map(p => [fmtFecha(p.fecha), p])).values()];
-
-  function setMet(id, val, label, cls) {
-    document.getElementById('v-'+id).textContent = val;
-    document.getElementById('b-'+id).textContent = label;
-    const c = document.getElementById('c-'+id);
-    c.classList.remove('warn','danger');
-    if (cls==='warn') c.classList.add('warn');
-    if (cls==='danger') c.classList.add('danger');
-  }
-
-  function generarAlertas(d) {
-    const alertas = [];
-
-    if (d.tds > 900)
-      alertas.push({ tipo:'danger', icono:'🚨', titulo:'PELIGRO — TDS muy alto', desc:`TDS: ${d.tds} ppm. El agua presenta alta concentración de sólidos disueltos. Posible contaminación química o industrial.` });
-    else if (d.tds > 600)
-      alertas.push({ tipo:'warn', icono:'⚠️', titulo:'Precaución — TDS elevado', desc:`TDS: ${d.tds} ppm. Nivel regular. Se recomienda monitoreo continuo.` });
-
-    if (d.turbidez > 200)
-      alertas.push({ tipo:'danger', icono:'🚨', titulo:'PELIGRO — Turbidez crítica', desc:`Turbidez: ${d.turbidez} NTU. Agua muy turbia. Posible vertimiento, erosión severa o evento de contaminación.` });
-    else if (d.turbidez > 50)
-      alertas.push({ tipo:'warn', icono:'⚠️', titulo:'Precaución — Turbidez elevada', desc:`Turbidez: ${d.turbidez} NTU. Agua moderadamente turbia. Puede deberse a lluvias o sedimentos.` });
-
-    if (d.ph < 6.5)
-      alertas.push({ tipo:'danger', icono:'🚨', titulo:'PELIGRO — pH ácido', desc:`pH: ${d.ph}. El agua está acidificada. Puede ser letal para organismos acuáticos. Posible lluvia ácida o vertimientos.` });
-    else if (d.ph > 8.5)
-      alertas.push({ tipo:'warn', icono:'⚠️', titulo:'Precaución — pH básico', desc:`pH: ${d.ph}. El agua está alcalina. Fuera del rango óptimo para la vida acuática.` });
-
-    if (d.oxigeno < 5)
-      alertas.push({ tipo:'danger', icono:'🚨', titulo:'PELIGRO — Oxígeno disuelto crítico', desc:`OD: ${d.oxigeno} mg/L. Nivel insuficiente para sostener vida acuática. Riesgo de mortandad de peces.` });
-    else if (d.oxigeno < 7)
-      alertas.push({ tipo:'warn', icono:'⚠️', titulo:'Precaución — Oxígeno disuelto bajo', desc:`OD: ${d.oxigeno} mg/L. Nivel por debajo del óptimo. Monitorear de cerca.` });
-
-    if (d.conductividad > 1500)
-      alertas.push({ tipo:'danger', icono:'🚨', titulo:'PELIGRO — Conductividad muy alta', desc:`EC: ${d.conductividad} µS/cm. Alta presencia de iones en el agua. Posible contaminación industrial o agrícola.` });
-
-    if (d.temperatura > 30)
-      alertas.push({ tipo:'warn', icono:'⚠️', titulo:'Precaución — Temperatura alta', desc:`Temperatura: ${d.temperatura}°C. Temperaturas elevadas reducen el oxígeno disuelto y afectan el ecosistema.` });
-
-    const contenedor = document.getElementById('alertas');
-    if (alertas.length === 0) {
-      contenedor.innerHTML = `
-        <div class="alerta alerta-ok">
-          <div class="alerta-icon">✅</div>
-          <div>
-            <div class="alerta-titulo">Todos los parámetros normales</div>
-            <div class="alerta-desc">La calidad del agua se encuentra dentro de los rangos saludables para el ecosistema acuático.</div>
-          </div>
-        </div>`;
-    } else {
-      contenedor.innerHTML = alertas.map(a => `
-        <div class="alerta alerta-${a.tipo}">
-          <div class="alerta-icon">${a.icono}</div>
-          <div>
-            <div class="alerta-titulo">${esc(a.titulo)}</div>
-            <div class="alerta-desc">${esc(a.desc)}</div>
-          </div>
-        </div>
-      `).join('');
-    }
-  }
-
-  function initChart() {
-    const ctx = document.getElementById('grafica').getContext('2d');
-    chart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: [],
-        datasets: [{
-          data: [],
-          borderColor: '#0f6e56',
-          backgroundColor: 'rgba(15,110,86,0.07)',
-          borderWidth: 2, tension: 0.4, pointRadius: 2, fill: true
-        }]
-      },
-      options: {
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { grid: { color: '#f0f0f0' }, ticks: { font: { size: 10 }, color: '#888', maxTicksLimit: 8 } },
-          y: { grid: { color: '#f0f0f0' }, ticks: { font: { size: 10 }, color: '#888' } }
-        },
-        animation: { duration: 300 }
-      }
-    });
-  }
-
-  function cambiar(sensor, btn) {
-    sensor_actual = sensor;
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
-    btn.classList.add('on');
-    const unidades = { tds:'ppm', turbidez:'NTU', ph:'', temperatura:'°C', conductividad:'µS/cm', oxigeno:'mg/L' };
-    document.getElementById('stat-sensor').textContent = sensor.toUpperCase() + ' (' + (unidades[sensor]||'') + ')';
-    actualizarChart();
-  }
-
-  function actualizarChart() {
-    const datos = hist[sensor_actual];
-    chart.data.labels = hist.labels;
-    chart.data.datasets[0].data = datos;
-    chart.update();
-    if (datos.length > 0) {
-      const avg = (datos.reduce((a,b)=>a+b,0)/datos.length).toFixed(1);
-      const max = Math.max(...datos).toFixed(1);
-      const min = Math.min(...datos).toFixed(1);
-      const unidades = { tds:'ppm', turbidez:'NTU', ph:'', temperatura:'°C', conductividad:'µS/cm', oxigeno:'mg/L' };
-      document.getElementById('s-avg').textContent = avg;
-      document.getElementById('s-max').textContent = max;
-      document.getElementById('s-min').textContent = min;
-      document.getElementById('s-avg-u').textContent = unidades[sensor_actual]||'';
-      document.getElementById('s-max-u').textContent = unidades[sensor_actual]||'';
-      document.getElementById('s-min-u').textContent = unidades[sensor_actual]||'';
-    }
-  }
-
-  async function actualizar() {
-    try {
-      const res = await fetch(API);
-      const d   = await res.json();
-      const act = d.actual;
-
-      if (act && act.tds !== undefined) {
-        const [tL,tC]   = clsTDS(act.tds);
-        const [tbL,tbC] = clsTurb(act.turbidez);
-        const [pL,pC]   = clsPH(act.ph);
-        const [nL,nC]   = clsNiv(act.nivel);
-        const [teL,teC] = clsTemp(act.temperatura||25);
-        const [hL,hC]   = clsHum(act.humedad||0);
-        const [eL,eC]   = clsEC(act.conductividad||0);
-        const [oL,oC]   = clsOD(act.oxigeno||0);
-
-        setMet('tds',   (act.tds||0).toFixed(1),            tL,  tC);
-        setMet('turb',  (act.turbidez||0).toFixed(1),       tbL, tbC);
-        setMet('ph',    (act.ph||0).toFixed(2),             pL,  pC);
-        setMet('nivel', act.nivel||'--',                    nL,  nC);
-        setMet('temp',  (act.temperatura||0)+'',            teL, teC);
-        setMet('hum',   (act.humedad||0)+'',                hL,  hC);
-        setMet('ec',    (act.conductividad||0).toFixed(1),  eL,  eC);
-        setMet('od',    (act.oxigeno||0).toFixed(2),        oL,  oC);
-
-        generarAlertas(act);
-      }
-
-      if (d.lecturas && d.lecturas.length > 0) {
-        hist.labels        = d.lecturas.map(fmtDiaHora);
-        hist.tds           = d.lecturas.map(l => parseFloat(l.tds)||0);
-        hist.turbidez      = d.lecturas.map(l => parseFloat(l.turbidez)||0);
-        hist.ph            = d.lecturas.map(l => parseFloat(l.ph)||0);
-        hist.temperatura   = d.lecturas.map(l => parseFloat(l.temperatura)||0);
-        hist.conductividad = d.lecturas.map(l => parseFloat(l.conductividad)||0);
-        hist.oxigeno       = d.lecturas.map(l => parseFloat(l.oxigeno)||0);
-        actualizarChart();
-
-        document.getElementById('s-count').textContent    = d.lecturas.length;
-        document.getElementById('total-lect').textContent = d.lecturas.length + ' registros';
-
-        const filas = [...d.lecturas].reverse().slice(0,30);
-        document.getElementById('tabla-lect').innerHTML = filas.map(f => `
-          <tr>
-            <td>${esc(fmtDiaHora(f))}</td>
-            <td>${parseFloat(f.tds||0).toFixed(1)}</td>
-            <td>${parseFloat(f.turbidez||0).toFixed(1)}</td>
-            <td>${parseFloat(f.ph||0).toFixed(2)}</td>
-            <td>${esc(f.temperatura||'--')}°C</td>
-            <td>${parseFloat(f.conductividad||0).toFixed(1)}</td>
-            <td>${parseFloat(f.oxigeno||0).toFixed(2)}</td>
-            <td>${esc(f.nivel||'--')}</td>
-          </tr>
-        `).join('');
-      }
-
-      if (d.promedios && d.promedios.length > 0) {
-        document.getElementById('tabla-diario').innerHTML = unicosPorFecha(d.promedios).reverse().map(p => `
-          <tr>
-            <td>${esc(fmtFecha(p.fecha))}</td>
-            <td>${parseFloat(p.tds||0).toFixed(1)}</td>
-            <td>${parseFloat(p.turbidez||0).toFixed(1)}</td>
-            <td>${parseFloat(p.ph||0).toFixed(2)}</td>
-            <td>${esc(p.registros)}</td>
-            <td><span class="badge ${clsCal(p.calidad)}">${esc(p.calidad)}</span></td>
-          </tr>
-        `).join('');
-      }
-
-      document.getElementById('estado').textContent = 'En línea';
-      document.getElementById('estado').style.color = '#a8f0d0';
-
-    } catch(e) {
-      document.getElementById('estado').textContent = 'Sin conexión';
-      document.getElementById('estado').style.color = '#ffaaaa';
-    }
-  }
-
-  initChart();
-  actualizar();
-  setInterval(actualizar, 10000);
-</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="static/datos.js"></script>
+<script src="static/extras.js"></script>
+<script src="static/animaciones.js"></script>
 </body>
 </html>
